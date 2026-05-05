@@ -1,0 +1,156 @@
+/* Home Page Styles */
+
+.hero {
+  position: relative;
+  min-height: 500px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--white);
+  overflow: hidden;
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(5, 22, 47, 0.55), rgba(5, 22, 47, 0.4)),
+    url("/yts_20241115_54158065724_o.jpg")
+      center/cover no-repeat;
+  transform: scale(1.04);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  animation: fadeUp 1s ease-out;
+}
+
+.hero-content h1 {
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.hero-button {
+  display: inline-block;
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  border: 2px solid #1c61d0;
+  background: #133b7d;
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.quote-banner {
+  padding: 4rem 1.5rem;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(5, 22, 47, 0.8) 100%),
+    linear-gradient(135deg, #e63946 0%, #12457a 50%, #1c61d0 100%);
+  text-align: center;
+  color: var(--white);
+}
+
+.quote-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quote-inner p {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.8;
+  font-style: italic;
+}
+
+.quote-author {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.why-section {
+  padding: 4rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.why-section h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.why-section h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.why-grid {
+  max-width: 1200px;
+  margin: 2.5rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+}
+
+.why-grid h3 {
+  color: var(--red);
+  font-size: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+.why-grid p {
+  color: #2f3e55;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.sponsors-section {
+  padding: 4rem 1.5rem 5rem;
+  background: #fafafa;
+}
+
+.sponsors-intro {
+  max-width: 900px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.sponsors-intro h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.sponsors-intro p {
+  color: #3c4b60;
+  line-height: 1.6;
+}
+
+.sponsors-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+.sponsor-card {
+  background: var(--white);
+  border: 1px solid #e5e8ef;
+  padding: 1.6rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #1d2b44;
+  box-shadow: 0 12px 26px rgba(5, 22, 47, 0.08);
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  animation: fadeUp 1s ease-out;
+}

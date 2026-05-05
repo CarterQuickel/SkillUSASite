@@ -1,0 +1,210 @@
+/* Competitions Page Styles */
+
+.hero-competitions .hero-media {
+  background: linear-gradient(rgba(5, 22, 47, 0.5), rgba(5, 22, 47, 0.35)),
+    url("https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80")
+      center/cover no-repeat;
+}
+
+.competitions-intro {
+  padding: 4rem 1.5rem;
+  background: #fafafa;
+  max-width: 1000px;
+  margin: 4rem auto 4rem;
+}
+
+.intro-content {
+  text-align: center;
+}
+
+.intro-content h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.intro-content h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.intro-content p {
+  color: #2f3e55;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+.competitions-content {
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+}
+
+.competitions-title {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.competitions-title::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.competitions-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.competition-card {
+  background: linear-gradient(135deg, #f7f4ee 0%, #ffffff 100%);
+  padding: 2rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--gold);
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.competition-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(5, 22, 47, 0.12);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.competition-card h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.4rem;
+  color: var(--navy);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.competition-card p {
+  color: #2f3e55;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* PDF section */
+.pdf-section {
+  padding: 4rem 1.5rem;
+  background: #fafafa;
+  text-align: center;
+}
+
+.pdf-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pdf-container h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.pdf-container h2::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 2px;
+  background: #152c4f;
+  margin: 0.8rem auto 0;
+}
+
+.pdf-container p {
+  color: #3c4b60;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pdf-download {
+  margin: 2rem 0;
+}
+
+.pdf-link {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--gold);
+  color: #2a1f06;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(201, 162, 76, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pdf-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 162, 76, 0.45);
+}
+
+.pdf-note {
+  font-size: 0.9rem;
+  color: #56739a;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+/* Competitions info section */
+.competitions-info {
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+}
+
+.info-card {
+  background: var(--white);
+  border: 1px solid #e5e8ef;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(5, 22, 47, 0.05);
+}
+
+.info-card h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.3rem;
+  color: var(--red);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.info-card p {
+  color: #2f3e55;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}

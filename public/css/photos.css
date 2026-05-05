@@ -1,0 +1,163 @@
+/* Photos Page Styles */
+
+.hero-photos .hero-media {
+  background: linear-gradient(rgba(5, 22, 47, 0.5), rgba(5, 22, 47, 0.35)),
+    url("/yts_20251120_55057350316_o.jpg") center/cover no-repeat;
+}
+
+.photos-intro {
+  padding: 3rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.photos-intro h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2.5rem;
+  color: var(--navy);
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.photos-intro h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.photos-intro p {
+  color: #2f3e55;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin: 1.5rem auto 0;
+  max-width: 600px;
+}
+
+.albums-container {
+  padding: 2rem 1.5rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.albums-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+}
+
+.album-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.album-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(5, 22, 47, 0.15);
+}
+
+.album-image {
+  position: relative;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.album-placeholder {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+  z-index: 1;
+}
+
+.album-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 22, 47, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  padding: 1rem;
+  text-align: center;
+}
+
+.album-card:hover .album-overlay {
+  opacity: 1;
+}
+
+.album-overlay h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.5rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.photo-count {
+  color: var(--gold);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.view-album {
+  display: inline-block;
+  color: var(--white);
+  text-decoration: none;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-album:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.album-info {
+  padding: 1.5rem;
+}
+
+.album-info h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.album-info p {
+  color: #2f3e55;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+}
+
+.date-posted {
+  color: #56739a;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0;
+}
