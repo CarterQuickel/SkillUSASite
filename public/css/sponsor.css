@@ -1,0 +1,319 @@
+/* Sponsor Page Styles */
+
+.hero-sponsor .hero-media {
+  background: linear-gradient(rgba(5, 22, 47, 0.5), rgba(5, 22, 47, 0.35)),
+    url("/20250402_092420_54450934127_o.jpg")
+      center/cover no-repeat;
+}
+
+.sponsor-intro {
+  padding: 4rem 1.5rem;
+  background: #fafafa;
+  max-width: 1000px;
+  margin: 3rem auto 3rem;
+}
+
+.sponsor-intro .intro-content {
+  text-align: center;
+}
+
+.sponsor-intro h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.sponsor-intro h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.sponsor-intro p {
+  color: #2f3e55;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+}
+
+/* Sponsorship benefits section */
+.sponsorship-benefits {
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+}
+
+.section-title {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 2px;
+  background: #152c4f;
+  margin: 1rem auto 0;
+}
+
+.benefits-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.benefit-card {
+  background: linear-gradient(135deg, #f7f4ee 0%, #ffffff 100%);
+  padding: 2rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--gold);
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(5, 22, 47, 0.12);
+}
+
+.benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.benefit-card h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.benefit-card p {
+  color: #2f3e55;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Sponsorship tiers section */
+.sponsorship-tiers {
+  padding: 4rem 1.5rem;
+  background: #fafafa;
+}
+
+.tiers-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.tier-card {
+  background: var(--white);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.tier-card.featured {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(5, 22, 47, 0.15);
+}
+
+.tier-card:hover {
+  box-shadow: 0 12px 28px rgba(5, 22, 47, 0.12);
+}
+
+.tier-card.featured:hover {
+  transform: scale(1.05) translateY(-4px);
+}
+
+.tier-header {
+  padding: 1.5rem;
+  color: var(--white);
+  text-align: center;
+}
+
+.tier-header h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tier-range {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.gold-tier {
+  background: linear-gradient(135deg, #c9a24c 0%, #b38c3f 100%);
+}
+
+.platinum-tier {
+  background: linear-gradient(135deg, #12457a 0%, #1c61d0 100%);
+}
+
+.diamond-tier {
+  background: linear-gradient(135deg, #b1292b 0%, #8b1f20 100%);
+}
+
+.tier-benefits {
+  padding: 1.5rem;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.tier-benefits li {
+  color: #2f3e55;
+  font-size: 0.95rem;
+  line-height: 2;
+  font-weight: 500;
+}
+
+/* Sponsorship options section */
+.sponsorship-options {
+  padding: 4rem 1.5rem;
+  background: #ffffff;
+}
+
+.options-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.option-card {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 8px;
+  border-top: 4px solid var(--gold);
+  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.option-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(5, 22, 47, 0.12);
+}
+
+.option-card h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.option-card p {
+  color: #2f3e55;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Current sponsors section */
+.current-sponsors {
+  padding: 4rem 1.5rem;
+  background: #fafafa;
+}
+
+.sponsors-intro {
+  text-align: center;
+  color: #3c4b60;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sponsors-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+}
+
+.sponsor-card {
+  background: var(--white);
+  border: 1px solid #e5e8ef;
+  padding: 1.6rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: #1d2b44;
+  box-shadow: 0 12px 26px rgba(5, 22, 47, 0.08);
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+}
+
+/* Sponsor CTA section */
+.sponsor-cta {
+  padding: 4rem 1.5rem;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, rgba(5, 22, 47, 0.8) 100%),
+    linear-gradient(135deg, #e63946 0%, #12457a 50%, #1c61d0 100%);
+  text-align: center;
+}
+
+.cta-content {
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--white);
+}
+
+.cta-content h2 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background: var(--gold);
+  color: #2a1f06;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(201, 162, 76, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  font-size: 1rem;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 162, 76, 0.55);
+  background: var(--gold-dark);
+}

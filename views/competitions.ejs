@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SkillsUSA | York County School of Technology</title>
+    <title>Competitions | SkillsUSA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,7 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/home.css" />
+    <link rel="stylesheet" href="/css/competitions.css" />
   </head>
   <body>
     <div class="utility-bar">
@@ -32,16 +32,16 @@
       <div class="nav-wrapper">
         <div class="logo">SkillsUSA<br /><span>York County School of Technology</span></div>
         <nav class="main-nav" aria-label="Main">
-          <a href="/" class="active">Home</a>
+          <a href="/">Home</a>
           <div class="nav-item">
-            <a href="#">About Us</a>
+            <a href="/about">About Us</a>
             <div class="submenu" role="menu" aria-label="About submenu">
               <a href="/about" role="menuitem">About</a>
               <a href="/staff" role="menuitem">Staff</a>
               <a href="/contact" role="menuitem">Contact</a>
             </div>
           </div>
-          <a href="/competitions">Competitions</a>
+          <a href="/competitions" class="active">Competitions</a>
           <div class="nav-item">
             <a href="#">Support</a>
             <div class="submenu" role="menu" aria-label="Support submenu">
@@ -57,85 +57,87 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="hero-media" role="img" aria-label="Students at SkillsUSA competitions"></div>
-        <div class="hero-content">
-          <h1>SkillsUSA Competitions</h1>
-          <a class="hero-button" href="/bars">Learn More</a>
-        </div>
-      </section>
-
-      <section class="why-section">
-        <h2>Why SkillsUSA?</h2>
-        <div class="why-grid">
-          <article>
-            <h3>What is SkillsUSA?</h3>
-            <p>
-              SkillsUSA is a top workforce development organization for students, empowering them to
-              become skilled professionals, leaders, and community members. Learn more about us and
-              our mission.
-            </p>
-          </article>
-          <article>
-            <h3>How do I benefit?</h3>
-            <p>
-              SkillsUSA championships offer practical training and experience in diverse industries.
-              Competitions assess skills in many areas. Participation helps students gain valuable
-              skills and experience for their future careers.
-            </p>
-          </article>
-          <article>
-            <h3>How do I join?</h3>
-            <p>
-              No matter who you are, no matter where you're from, you've got what it takes to be a
-              SkillsUSA champion. To join SkillsUSA click "join" on the header and fill out the form.
-            </p>
-          </article>
-          <article>
-            <h3>How do I help out?</h3>
-            <p>
-              SkillsUSA provides opportunities for students to positively impact their communities.
-              Stay up-to-date on volunteer opportunities by checking the events page.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="quote-banner">
-        <div class="quote-inner">
+      <section class="competitions-intro">
+        <div class="intro-content">
+          <h2>SkillsUSA Competitions</h2>
           <p>
-            "Placeholder quote about the value of SkillsUSA and how it has impacted students' lives and careers."
+            SkillsUSA competitions provide students with the opportunity to demonstrate the technical
+            and professional skills they've learned in their career and technical programs. From
+            carpentry and culinary arts to information technology and healthcare, our competitions
+            span diverse industries and skill levels.
           </p>
-          <span class="quote-author">Placeholder Name</span>
-        </div>
-      </section>
-
-      <section class="sponsors-section">
-        <div class="sponsors-intro">
-          <h2>Sponsors</h2>
           <p>
-            Without the support of our partners, SkillsUSA's vital mission of empowering students to
-            become skilled professionals, career-ready leaders and responsible community members
-            could never be accomplished. Learn more about the why's and how's of supporting SkillsUSA,
-            and help us shape a future we can all be proud of: a future set in skills.
+            Competitors are evaluated on technical knowledge, craftsmanship, professionalism, and
+            teamwork. Winners advance through regional, state, and national levels, with the best
+            students competing at the SkillsUSA National Leadership and Skills Conference.
+          </p>
+          <p>
+            Whether you're a first-time competitor or a veteran of the stage, SkillsUSA competitions
+            offer a platform to shine and prepare for career success.
           </p>
         </div>
-        <div class="sponsors-grid">
-          <div class="sponsor-card">SECCO Electric</div>
-          <div class="sponsor-card">Faulkner</div>
-          <div class="sponsor-card">Hoffman Ford</div>
-          <div class="sponsor-card">Remco, Inc.</div>
-          <div class="sponsor-card">Pennsylvania College of Technology</div>
-          <div class="sponsor-card">Ainsworth</div>
-          <div class="sponsor-card">Crown Automotive</div>
-          <div class="sponsor-card">AP Williams Construction</div>
-          <div class="sponsor-card">DCTS Education Foundation</div>
-          <div class="sponsor-card">Dauphin County</div>
-          <div class="sponsor-card">Collision Repair Technology</div>
-          <div class="sponsor-card">LaPorte Painting</div>
-          <div class="sponsor-card">Machinery Tech</div>
-          <div class="sponsor-card">IEC Pennsylvania</div>
-          <div class="sponsor-card">Witmer Group</div>
+      </section>
+
+      <section class="pdf-section">
+        <div class="pdf-container">
+          <h2>Competition Guidelines & Rules</h2>
+          <p>Download the official competition guidelines and rules for this year:</p>
+          <div class="pdf-download">
+            <a href="/pdfs/competition-guidelines.pdf" class="pdf-link" download>
+              Download Competition Guidelines (PDF)
+            </a>
+          </div>
+          <p class="pdf-note">
+            If the PDF file is not available, please contact us for more information about specific
+            competition rules and requirements.
+          </p>
+        </div>
+      </section>
+
+      <section class="competitions-content">
+        <h2 class="competitions-title">Competition Levels</h2>
+        <div class="competitions-grid">
+          <div class="competition-card">
+            <h3>Local Competitions</h3>
+            <p>
+              Compete at the school level to advance to regional and state competitions. Build
+              experience and connections with other skilled students.
+            </p>
+          </div>
+
+          <div class="competition-card">
+            <h3>State Championships</h3>
+            <p>
+              Winners from regional competitions advance to the state championships where the best
+              of the best compete for top honors and advancement to nationals.
+            </p>
+          </div>
+
+          <div class="competition-card">
+            <h3>National Conference</h3>
+            <p>
+              The ultimate competition experience. Top competitors from all states gather at the
+              SkillsUSA National Leadership and Skills Conference.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="competitions-info">
+        <div class="info-card">
+          <h3>Getting Started</h3>
+          <p>
+            Interested in competing? Talk to your teacher or advisor about which competition aligns
+            with your skills and interests.
+          </p>
+        </div>
+        <div class="info-card">
+          <h3>Preparation</h3>
+          <p>
+            Work with your advisor to prepare for competition day. Study the technical standards,
+            practice your skills, and familiarize yourself with the judging criteria to maximize
+            your chances of success.
+          </p>
         </div>
       </section>
     </main>
