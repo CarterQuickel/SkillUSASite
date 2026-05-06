@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login | SkillsUSA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spectral:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <main class="form-page">
+      <section class="form-card">
+        <h1>Admin Login</h1>
+        <p>Enter the admin credentials to continue.</p>
+
+        <% if (error) { %>
+          <p class="form-message error"><%= error %></p>
+        <% } %>
+        <% if (message) { %>
+          <p class="form-message success"><%= message %></p>
+        <% } %>
+
+        <form action="/admin/login" method="post" class="form-layout">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" value="<%= username %>" required />
+
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required />
+
+          <button type="submit" class="hero-button">Sign In</button>
+        </form>
+
+        <p class="form-footer">
+          <a href="/">Return to home</a>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
