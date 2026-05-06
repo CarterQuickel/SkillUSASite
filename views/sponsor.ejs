@@ -14,48 +14,7 @@
     <link rel="stylesheet" href="/css/sponsor.css" />
   </head>
   <body>
-    <div class="utility-bar">
-      <div class="utility-content">
-        <div class="utility-contact">
-          <span class="utility-item">&#128222; 717-652-3170</span>
-          <span class="utility-item">&#9993; jhaste@dcts.org</span>
-        </div>
-        <div class="utility-icons">
-          <span class="icon-circle">&#128270;</span>
-          <span class="icon-circle"><img src="/icons/facebook-icon.png" alt="Facebook" width="20" height="20" /></span>
-          <span class="icon-circle"><img src="/icons/instagram-icon.png" alt="Instagram" width="24" height="24" /></span>
-        </div>
-      </div>
-    </div>
-
-    <header class="site-header">
-      <div class="nav-wrapper">
-        <div class="logo">SkillsUSA<br /><span>York County School of Technology</span></div>
-        <nav class="main-nav" aria-label="Main">
-          <a href="/">Home</a>
-          <div class="nav-item">
-            <a href="/about">About Us</a>
-            <div class="submenu" role="menu" aria-label="About submenu">
-              <a href="/about" role="menuitem">About</a>
-              <a href="/staff" role="menuitem">Staff</a>
-              <a href="/contact" role="menuitem">Contact</a>
-            </div>
-          </div>
-          <a href="/competitions">Competitions</a>
-          <div class="nav-item">
-            <a href="#">Support</a>
-            <div class="submenu" role="menu" aria-label="Support submenu">
-              <a href="/donate" role="menuitem">Donate</a>
-              <a href="/sponsor" class="active" role="menuitem">Sponsor</a>
-            </div>
-          </div>
-          <a href="/news">News</a>
-          <a href="/photos">Photos</a>
-        </nav>
-        <a class="cta" href="#">Join SkillsUSA &#8594;</a>
-      </div>
-    </header>
-
+    <%- include('header') %>
     <main>
       <section class="hero hero-sponsor">
         <div class="hero-media" role="img" aria-label="Become a Sponsor"></div>
@@ -201,51 +160,7 @@
         </div>
       </section>
     </main>
-
-    <footer class="site-footer">
-      <div class="footer-grid">
-        <div class="footer-brand">
-          <div class="logo footer-logo">SkillsUSA<br /><span>Pennsylvania</span></div>
-          <div class="social">
-            <span class="icon-circle"><img src="/icons/facebook-icon.png" alt="Facebook" width="20" height="20" /></span>
-            <span class="icon-circle"><img src="/icons/instagram-icon.png" alt="Instagram" width="24" height="24" /></span>
-          </div>
-        </div>
-        <div>
-          <h4>Quick Links</h4>
-          <ul>
-            <li>Home</li>
-            <li>About Us</li>
-            <li>Competitions</li>
-            <li>Support</li>
-            <li>News</li>
-            <li>Photos</li>
-          </ul>
-        </div>
-        <div>
-          <h4>About</h4>
-          <p>6001 Locust Lane<br />Harrisburg, PA 17901</p>
-          <p>
-            SkillsUSA Inc. is a national nonprofit and tax-exempt student organization under the
-            Internal Revenue Service Code Section (501)(c)(3).
-          </p>
-        </div>
-        <div>
-          <h4>Contact Us</h4>
-          <p>&#128203; Contact Form</p>
-          <p>&#128222; 717-652-3170</p>
-          <p>&#9993; jhaste@dcts.org</p>
-          <p>&#128247; dcts_skillsusa</p>
-          <p>&#128100; YCST - SkillsUSA</p>
-        </div>
-      </div>
-      <div class="footer-bottom">&copy; All rights reserved</div>
-    </footer>
-
-    <button class="accessibility" aria-label="Accessibility options">
-      &#9855;
-    </button>
-
+    <%- include('footer') %>
     <script src="/js/main.js"></script>
   </body>
 </html>
