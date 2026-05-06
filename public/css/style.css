@@ -51,10 +51,13 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
   display: grid;
   place-items: center;
   font-size: 0.8rem;
+}
+
+.icon-circle img {
+  filter: invert(1);
 }
 
 .site-header {
@@ -387,5 +390,4 @@ body {
     padding: 0 1rem;
   }
 }
-
 
