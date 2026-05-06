@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const { initializeDatabase, getStaffBySection } = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,8 +23,16 @@ app.get("/about", (req, res) => {
 	res.render("about");
 });
 
-app.get("/staff", (req, res) => {
-	res.render("staff");
+app.get("/staff", async (req, res, next) => {
+	try {
+		const [advisors, officers] = await Promise.all([
+			getStaffBySection("Advisors"),
+			getStaffBySection("Officers")
+		]);
+		res.render("staff", { advisors, officers });
+	} catch (error) {
+		next(error);
+	}
 });
 
 app.get("/competitions", (req, res) => {
@@ -50,6 +59,14 @@ app.get("/photos", (req, res) => {
 	res.render("photos");
 });
 
-app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
+const startServer = async () => {
+	await initializeDatabase();
+	app.listen(PORT, () => {
+		console.log(`Server running at http://localhost:${PORT}`);
+	});
+};
+
+startServer().catch((error) => {
+	console.error("Failed to start server:", error);
+	process.exit(1);
 });

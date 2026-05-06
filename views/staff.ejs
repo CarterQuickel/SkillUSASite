@@ -64,71 +64,23 @@
           <p>Dedicated mentors supporting our members</p>
         </div>
         <div class="team-grid">
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+1" alt="Advisor 1" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+2" alt="Advisor 2" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+3" alt="Advisor 3" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+4" alt="Advisor 4" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+5" alt="Advisor 5" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Advisor+6" alt="Advisor 6" />
-            </div>
-            <div class="member-info">
-              <h3>Advisor Name</h3>
-              <p class="member-role">SkillsUSA Advisor</p>
-              <p class="member-bio">Brief description of their background and experience as an advisor.</p>
-            </div>
-          </div>
+          <% if (advisors && advisors.length) { %>
+            <% advisors.forEach((member) => { %>
+              <% const imageSrc = "/icons/placeholder.png"; %>
+              <div class="team-member">
+                <div class="member-image">
+                  <img src="<%= imageSrc %>" alt="<%= member.name %>" />
+                </div>
+                <div class="member-info">
+                  <h3><%= member.name %></h3>
+                  <p class="member-role"><%= member.role %></p>
+                  <p class="member-bio"><%= member.bio %></p>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p>No advisors are listed yet.</p>
+          <% } %>
         </div>
       </section>
 
@@ -139,49 +91,23 @@
           <p>Leadership driving SkillsUSA forward</p>
         </div>
         <div class="team-grid">
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Officer+1" alt="Officer 1" />
-            </div>
-            <div class="member-info">
-              <h3>Officer Name</h3>
-              <p class="member-role">President</p>
-              <p class="member-bio">Brief description of their role and background in SkillsUSA.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Officer+2" alt="Officer 2" />
-            </div>
-            <div class="member-info">
-              <h3>Officer Name</h3>
-              <p class="member-role">Vice President</p>
-              <p class="member-bio">Brief description of their role and background in SkillsUSA.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Officer+3" alt="Officer 3" />
-            </div>
-            <div class="member-info">
-              <h3>Officer Name</h3>
-              <p class="member-role">Treasurer</p>
-              <p class="member-bio">Brief description of their role and background in SkillsUSA.</p>
-            </div>
-          </div>
-
-          <div class="team-member">
-            <div class="member-image">
-              <img src="https://via.placeholder.com/300x400?text=Officer+4" alt="Officer 4" />
-            </div>
-            <div class="member-info">
-              <h3>Officer Name</h3>
-              <p class="member-role">Secretary</p>
-              <p class="member-bio">Brief description of their role and background in SkillsUSA.</p>
-            </div>
-          </div>
+          <% if (officers && officers.length) { %>
+            <% officers.forEach((member) => { %>
+              <% const imageSrc = "/icons/placeholder.png"; %>
+              <div class="team-member">
+                <div class="member-image">
+                  <img src="<%= imageSrc %>" alt="<%= member.name %>" />
+                </div>
+                <div class="member-info">
+                  <h3><%= member.name %></h3>
+                  <p class="member-role"><%= member.role %></p>
+                  <p class="member-bio"><%= member.bio %></p>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p>No officers are listed yet.</p>
+          <% } %>
         </div>
       </section>
     </main>
