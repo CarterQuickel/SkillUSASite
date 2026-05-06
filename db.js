@@ -5,6 +5,8 @@ const sqlite3 = require("sqlite3").verbose();
 
 const dataDir = path.join(__dirname, "data");
 const dbPath = path.join(dataDir, "skillusa.db");
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "sCh00lw!deY3$t";
 
 let dbInstance = null;
 
@@ -57,18 +59,51 @@ const hashPassword = (password, salt = crypto.randomBytes(16).toString("hex")) =
   return `scrypt:${salt}:${hash}`;
 };
 
+const verifyPassword = (password, storedHash) => {
+  if (!storedHash || typeof storedHash !== "string") {
+    return false;
+  }
+
+  const [scheme, salt, hash] = storedHash.split(":");
+  if (scheme !== "scrypt" || !salt || !hash) {
+    return false;
+  }
+
+  const candidate = crypto.scryptSync(password, salt, 64).toString("hex");
+  return crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(candidate, "hex"));
+};
+
 const seedAdminIfMissing = async (db) => {
   const row = await get(db, "SELECT COUNT(*) AS count FROM admin_account");
   if (row.count > 0) {
     return;
   }
 
-  const username = "admin";
-  const passwordHash = hashPassword("change-me");
+  const username = ADMIN_USERNAME;
+  const passwordHash = hashPassword(ADMIN_PASSWORD);
   await run(
     db,
     "INSERT INTO admin_account (id, username, password_hash) VALUES (1, ?, ?)",
     [username, passwordHash]
+  );
+};
+
+const ensureAdminPassword = async (db) => {
+  const row = await get(db, "SELECT id FROM admin_account WHERE id = 1");
+  const passwordHash = hashPassword(ADMIN_PASSWORD);
+  if (!row) {
+    await run(
+      db,
+      "INSERT INTO admin_account (id, username, password_hash) VALUES (1, ?, ?)",
+      [ADMIN_USERNAME, passwordHash]
+    );
+    return;
+  }
+
+  await run(
+    db,
+    "UPDATE admin_account SET username = ?, password_hash = ? WHERE id = 1",
+    [ADMIN_USERNAME, passwordHash]
   );
 };
 
@@ -177,6 +212,7 @@ const initializeDatabase = async () => {
 
   await seedAdminIfMissing(db);
   await seedStaffIfMissing(db);
+  await ensureAdminPassword(db);
 };
 
 const getStaffBySection = async (section) => {
@@ -191,7 +227,22 @@ const getStaffBySection = async (section) => {
   );
 };
 
+const verifyAdminCredentials = async (username, password) => {
+  const db = getDb();
+  const row = await get(
+    db,
+    "SELECT password_hash FROM admin_account WHERE username = ? AND id = 1",
+    [username]
+  );
+  if (!row) {
+    return false;
+  }
+
+  return verifyPassword(password, row.password_hash);
+};
+
 module.exports = {
   initializeDatabase,
-  getStaffBySection
+  getStaffBySection,
+  verifyAdminCredentials
 };

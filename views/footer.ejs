@@ -52,7 +52,11 @@
         </div>
       </div>
       <div class="footer-bottom">&copy; All rights reserved</div>
-      <button>Admin Login</button>
+      <% if (isAdmin) { %>
+        <span class="hero-button">You are logged in!</span>
+      <% } else { %>
+        <a class="hero-button" href="/admin/login">Admin Login</a>
+      <% } %>
     </footer>
   </body>
 </html>
