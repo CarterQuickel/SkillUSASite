@@ -408,48 +408,129 @@ const verifyAdminCredentials = async (username, password) => {
 };
 
 const getNewsItems = async () => {
+
   const db = getDb();
+
   return all(
     db,
-    `SELECT id, title, info, image_url, date, category, is_featured
-     FROM news_items
-     ORDER BY is_featured DESC, date DESC, id DESC`
+    `
+      SELECT
+        id,
+        title,
+        info,
+        image_url,
+        date,
+        category,
+        is_featured
+      FROM news_items
+      ORDER BY
+        is_featured DESC,
+        date DESC,
+        id DESC
+    `
   );
+
 };
 
 const getNewsItemById = async (id) => {
+
   const db = getDb();
+
   return get(
     db,
-    `SELECT id, title, info, image_url, date, category, is_featured
-     FROM news_items
-     WHERE id = ?`,
+    `
+      SELECT
+        id,
+        title,
+        info,
+        image_url,
+        date,
+        category,
+        is_featured
+      FROM news_items
+      WHERE id = ?
+    `,
     [id]
   );
+
 };
 
-const createNewsItem = async ({ title, info, imageUrl, date, category, isFeatured }) => {
+const createNewsItem = async ({
+  title,
+  info,
+  imageUrl,
+  date,
+  category,
+  isFeatured
+}) => {
+
   const db = getDb();
+
   const result = await run(
     db,
-    `INSERT INTO news_items (title, info, image_url, date, category, is_featured)
-     VALUES (?, ?, ?, ?, ?, ?)`
-    ,
-    [title, info, imageUrl, date, category, isFeatured ? 1 : 0]
+    `
+      INSERT INTO news_items (
+        title,
+        info,
+        image_url,
+        date,
+        category,
+        is_featured
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+    [
+      title,
+      info,
+      imageUrl,
+      date,
+      category,
+      isFeatured ? 1 : 0
+    ]
   );
+
   return result.lastID;
 };
 
-const updateNewsItem = async (id, { title, info, imageUrl, date, category }) => {
+const updateNewsItem = async (
+  id,
+  {
+    title,
+    info,
+    imageUrl,
+    date,
+    category,
+    isFeatured
+  }
+) => {
+
   const db = getDb();
+
   await run(
     db,
-    `UPDATE news_items
-     SET title = ?, info = ?, image_url = ?, date = ?, category = ?, updated_at = datetime('now')
-     WHERE id = ?`
-    ,
-    [title, info, imageUrl, date, category, id]
+    `
+      UPDATE news_items
+      SET
+        title = ?,
+        info = ?,
+        image_url = ?,
+        date = ?,
+        category = ?,
+        is_featured = ?,
+        updated_at = datetime('now')
+      WHERE id = ?
+    `,
+    [
+      title,
+      info,
+      imageUrl,
+      date,
+      category,
+      isFeatured ? 1 : 0,
+      id
+    ]
   );
+
 };
 
 const deleteNewsItem = async (id) => {

@@ -1,45 +1,95 @@
 document.addEventListener("DOMContentLoaded", () => {
   const editModal = document.getElementById("adminEditModal");
+
   if (!editModal) {
     return;
   }
 
   const editForm = document.getElementById("adminEditForm");
   const modalTitle = document.getElementById("adminModalTitle");
-  const newsSection = editModal.querySelector('[data-admin-section="news"]');
-  const eventSection = editModal.querySelector('[data-admin-section="event"]');
-  const newsImageFileInput = document.getElementById("adminNewsImageFile");
-  const newsDateInput = document.getElementById("adminNewsDate");
-  const newsTitleInput = document.getElementById("adminNewsTitle");
-  const newsInfoInput = document.getElementById("adminNewsInfo");
-  const eventTitleInput = document.getElementById("adminEventTitle");
-  const eventStartDateInput = document.getElementById("adminEventStartDate");
-  const eventEndDateInput = document.getElementById("adminEventEndDate");
-  const eventLocationInput = document.getElementById("adminEventLocation");
-  const eventInfoInput = document.getElementById("adminEventInfo");
-  const previewCard = document.getElementById("adminPreviewCard");
-  const saveButton = editForm.querySelector(".admin-modal-save");
+
+  const newsSection = editModal.querySelector(
+    '[data-admin-section="news"]'
+  );
+
+  const eventSection = editModal.querySelector(
+    '[data-admin-section="event"]'
+  );
+
+  const newsImageFileInput =
+    document.getElementById("adminNewsImageFile");
+
+  const newsDateInput =
+    document.getElementById("adminNewsDate");
+
+  const newsTitleInput =
+    document.getElementById("adminNewsTitle");
+
+  const newsInfoInput =
+    document.getElementById("adminNewsInfo");
+
+  const eventTitleInput =
+    document.getElementById("adminEventTitle");
+
+  const eventStartDateInput =
+    document.getElementById("adminEventStartDate");
+
+  const eventEndDateInput =
+    document.getElementById("adminEventEndDate");
+
+  const eventLocationInput =
+    document.getElementById("adminEventLocation");
+
+  const eventInfoInput =
+    document.getElementById("adminEventInfo");
+
+  const previewCard =
+    document.getElementById("adminPreviewCard");
+
+  const saveButton =
+    editForm.querySelector(".admin-modal-save");
 
   const maxImageSize = 50 * 1024 * 1024;
-  const allowedTypes = ["image/png", "image/jpeg"];
-  const isAdmin = document.body?.dataset?.isAdmin === "true";
+
+  const allowedTypes = [
+    "image/png",
+    "image/jpeg"
+  ];
+
+  const isAdmin =
+    document.body?.dataset?.isAdmin === "true";
 
   let activeCard = null;
   let activeImageUrl = "";
   let previewObjectUrl = "";
 
+  const socket = io({
+    transports: ["websocket", "polling"]
+  });
+
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Socket disconnected");
+  });
+
   const validateImageFile = (file) => {
     if (!file) {
       return true;
     }
+
     if (!allowedTypes.includes(file.type)) {
       alert("Only PNG or JPG images are allowed.");
       return false;
     }
+
     if (file.size > maxImageSize) {
       alert("Image is too large. Max size is 50 MB.");
       return false;
     }
+
     return true;
   };
 
@@ -47,10 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!value) {
       return "";
     }
+
     const parsed = new Date(`${value}T00:00:00`);
+
     if (Number.isNaN(parsed.getTime())) {
       return "";
     }
+
     return parsed.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -58,131 +111,151 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  const getIsoDate = (date) => {
-    if (!date || Number.isNaN(date.getTime())) {
-      return "";
-    }
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const parseNewsDateValue = (text) => {
-    if (!text) {
-      return "";
-    }
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-      return text;
-    }
-    const parsed = new Date(text);
-    return getIsoDate(parsed);
-  };
-
-  const parseEventDatesFromCard = (card) => {
-    const startValue = card.dataset.startDate || "";
-    const endValue = card.dataset.endDate || "";
-    if (startValue) {
-      return {
-        start: new Date(startValue),
-        end: endValue ? new Date(endValue) : null
-      };
-    }
-    const monthText = card.querySelector(".event-month")?.textContent.trim() || "";
-    const year = new Date().getFullYear();
-    const dayText = card.querySelector(".event-day")?.textContent.trim() || "";
-    const rangeText = card.querySelector(".date-display")?.textContent.trim() || "";
-
-    if (dayText) {
-      const start = new Date(`${monthText} ${dayText}, ${year}`);
-      return { start, end: null };
-    }
-
-    if (rangeText.includes("-")) {
-      const parts = rangeText.split("-").map((part) => part.trim());
-      const startDay = parts[0];
-      const endPart = parts[1] || "";
-      const endPieces = endPart.split(" ").filter(Boolean);
-      const endMonth = endPieces.length > 1 ? endPieces[0] : monthText;
-      const endDay = endPieces.length > 1 ? endPieces[1] : endPieces[0];
-      const start = new Date(`${monthText} ${startDay}, ${year}`);
-      const end = new Date(`${endMonth} ${endDay}, ${year}`);
-      return { start, end };
-    }
-
-    return { start: null, end: null };
-  };
-
   const buildAdminActions = (type) => {
     if (!isAdmin) {
       return null;
     }
+
     const actions = document.createElement("div");
     actions.className = "news-admin-actions";
 
     const deleteButton = document.createElement("button");
-    deleteButton.className = "admin-icon-button admin-delete-button";
+
+    deleteButton.className =
+      "admin-icon-button admin-delete-button";
+
     deleteButton.type = "button";
-    deleteButton.title = type === "news" ? "Delete news" : "Delete event";
-    deleteButton.setAttribute("aria-label", deleteButton.title);
-    deleteButton.innerHTML = '<img src="/icons/trash.svg" alt="" aria-hidden="true" />';
+
+    deleteButton.title =
+      type === "news"
+        ? "Delete news"
+        : "Delete event";
+
+    deleteButton.setAttribute(
+      "aria-label",
+      deleteButton.title
+    );
+
+    deleteButton.innerHTML =
+      '<img src="/icons/trash.svg" alt="" aria-hidden="true" />';
 
     const editButton = document.createElement("button");
-    editButton.className = "admin-icon-button admin-edit-button";
+
+    editButton.className =
+      "admin-icon-button admin-edit-button";
+
     editButton.type = "button";
-    editButton.title = type === "news" ? "Edit news" : "Edit event";
-    editButton.setAttribute("aria-label", editButton.title);
-    editButton.innerHTML = '<img src="/icons/pen.svg" alt="" aria-hidden="true" />';
+
+    editButton.title =
+      type === "news"
+        ? "Edit news"
+        : "Edit event";
+
+    editButton.setAttribute(
+      "aria-label",
+      editButton.title
+    );
+
+    editButton.innerHTML =
+      '<img src="/icons/pen.svg" alt="" aria-hidden="true" />';
 
     actions.appendChild(deleteButton);
     actions.appendChild(editButton);
+
     return actions;
   };
 
   const buildNewsCard = (item) => {
     const article = document.createElement("article");
-    article.className = item.isFeatured ? "news-article featured" : "news-article";
+
+    article.className = item.isFeatured
+      ? "news-article featured"
+      : "news-article";
+
     article.dataset.itemType = "news";
     article.dataset.id = item.id;
     article.dataset.newsDate = item.date;
-    article.dataset.category = item.category || "Announcements";
-    article.dataset.isNew = "false";
+    article.dataset.category =
+      item.category || "Announcements";
 
-    const adminActions = buildAdminActions("news");
+    const adminActions =
+      buildAdminActions("news");
+
     if (adminActions) {
       article.appendChild(adminActions);
     }
 
-    const imageWrap = document.createElement("div");
-    imageWrap.className = item.isFeatured ? "article-image featured-image" : "article-image";
+    const imageWrap =
+      document.createElement("div");
+
+    imageWrap.className = item.isFeatured
+      ? "article-image featured-image"
+      : "article-image";
+
     const img = document.createElement("img");
-    img.src = item.imageUrl || "/icons/placeholder.png";
-    img.alt = item.isFeatured ? "Featured article" : "News item";
+
+    img.src =
+      item.imageUrl ||
+      "/icons/placeholder.png";
+
+    img.alt = "News item";
+
     imageWrap.appendChild(img);
 
-    const content = document.createElement("div");
-    content.className = "article-content";
+    const content =
+      document.createElement("div");
 
-    const meta = document.createElement("div");
+    content.className =
+      "article-content";
+
+    const meta =
+      document.createElement("div");
+
     meta.className = "article-meta";
-    const date = document.createElement("span");
-    date.className = "article-date news-date";
-    date.textContent = formatDisplayDate(item.date);
-    const category = document.createElement("span");
-    category.className = item.isFeatured ? "article-category featured-category" : "article-category";
-    category.textContent = item.category || "Announcements";
+
+    const date =
+      document.createElement("span");
+
+    date.className =
+      "article-date news-date";
+
+    date.textContent =
+      formatDisplayDate(item.date);
+
+    const category =
+      document.createElement("span");
+
+    category.className =
+      "article-category";
+
+    category.textContent =
+      item.category || "Announcements";
+
     meta.appendChild(date);
     meta.appendChild(category);
 
-    const title = document.createElement("h3");
-    title.textContent = item.title || "";
-    const info = document.createElement("p");
+    const title =
+      document.createElement("h3");
+
+    title.textContent =
+      item.title || "";
+
+    const info =
+      document.createElement("p");
+
     info.className = "news-info";
-    info.textContent = item.info || "";
-    const link = document.createElement("a");
+
+    info.textContent =
+      item.info || "";
+
+    const link =
+      document.createElement("a");
+
     link.className = "read-more";
     link.href = "#";
-    link.textContent = item.isFeatured ? "Read Full Story →" : "Read More →";
+
+    link.textContent =
+      "Read More →";
 
     content.appendChild(meta);
     content.appendChild(title);
@@ -191,59 +264,77 @@ document.addEventListener("DOMContentLoaded", () => {
 
     article.appendChild(imageWrap);
     article.appendChild(content);
+
     return article;
   };
 
   const buildEventCard = (item) => {
-    const card = document.createElement("div");
+    const card =
+      document.createElement("div");
+
     card.className = "event-card";
+
     card.dataset.itemType = "event";
     card.dataset.id = item.id;
-    card.dataset.startDate = item.startDate || "";
-    card.dataset.endDate = item.endDate || "";
-    card.dataset.duration = item.duration || "";
-    card.dataset.isNew = "false";
+    card.dataset.startDate =
+      item.startDate || "";
 
-    const adminActions = buildAdminActions("event");
+    card.dataset.endDate =
+      item.endDate || "";
+
+    card.dataset.duration =
+      item.duration || "";
+
+    const adminActions =
+      buildAdminActions("event");
+
     if (adminActions) {
       card.appendChild(adminActions);
     }
 
-    const dateBlock = document.createElement("div");
+    const dateBlock =
+      document.createElement("div");
+
     dateBlock.className = "event-date";
+
+    const startDate =
+      new Date(`${item.startDate}T00:00:00`);
+
+    const month =
+      startDate.toLocaleString("en-US", {
+        month: "short"
+      });
+
+    const day =
+      startDate.getDate();
+
+    dateBlock.innerHTML = `
+      <div class="event-month">${month}</div>
+      <div class="event-day">${day}</div>
+    `;
+
+    const content =
+      document.createElement("div");
+
+    content.className =
+      "event-content";
+
+    content.innerHTML = `
+      <h3>${item.title || ""}</h3>
+      <p class="event-location event-location-text">
+        ${item.location ? `📍 ${item.location}` : ""}
+      </p>
+      <p class="event-info">
+        ${item.info || ""}
+      </p>
+      <a href="#" class="event-link">
+        Learn More →
+      </a>
+    `;
+
     card.appendChild(dateBlock);
-
-    const content = document.createElement("div");
-    content.className = "event-content";
-    const title = document.createElement("h3");
-    title.textContent = item.title || "";
-    content.appendChild(title);
-
-    if (item.duration) {
-      const duration = document.createElement("p");
-      duration.className = "event-duration";
-      duration.textContent = `⏱️ ${item.duration}`;
-      content.appendChild(duration);
-    }
-
-    const location = document.createElement("p");
-    location.className = "event-location event-location-text";
-    location.textContent = item.location ? `📍 ${item.location}` : "";
-    content.appendChild(location);
-
-    const info = document.createElement("p");
-    info.className = "event-info";
-    info.textContent = item.info || "";
-    content.appendChild(info);
-
-    const link = document.createElement("a");
-    link.className = "event-link";
-    link.href = "#";
-    link.textContent = "Learn More →";
-    content.appendChild(link);
-
     card.appendChild(content);
-    updateEventDateDisplay(card, item.startDate || "", item.endDate || "");
+
     return card;
   };
 
@@ -251,534 +342,548 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!card) {
       return;
     }
-    const className = type === "enter" ? "live-enter" : "live-update";
+
+    const className =
+      type === "enter"
+        ? "live-enter"
+        : "live-update";
+
     card.classList.add(className);
+
     window.setTimeout(() => {
       card.classList.remove(className);
-    }, type === "enter" ? 500 : 650);
+    }, 600);
   };
 
-  const requestJson = async (url, options) => {
-    const response = await fetch(url, options);
+  const requestJson = async (
+    url,
+    options
+  ) => {
+    const response =
+      await fetch(url, options);
+
     if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      throw new Error(payload.error || "Request failed.");
-    }
-    return response.json().catch(() => ({}));
-  };
+      const payload =
+        await response
+          .json()
+          .catch(() => ({}));
 
-  const sortNewsByDate = () => {
-    const container = document.querySelector(".news-grid");
-    if (!container) {
-      return;
-    }
-    const featured = container.querySelectorAll(".news-article.featured");
-    const regularItems = Array.from(container.querySelectorAll(".news-article:not(.featured)"));
-    regularItems.sort((a, b) => {
-      const aDate = a.dataset.newsDate ? new Date(`${a.dataset.newsDate}T00:00:00`).getTime() : 0;
-      const bDate = b.dataset.newsDate ? new Date(`${b.dataset.newsDate}T00:00:00`).getTime() : 0;
-      return bDate - aDate;
-    });
-    featured.forEach((item) => container.appendChild(item));
-    regularItems.forEach((item) => container.appendChild(item));
-  };
-
-  const sortEventsByDate = () => {
-    const container = document.querySelector(".events-grid");
-    if (!container) {
-      return;
-    }
-    const cards = Array.from(container.querySelectorAll(".event-card"));
-    cards.sort((a, b) => {
-      const aDate = a.dataset.startDate ? new Date(`${a.dataset.startDate}T00:00:00`).getTime() : 0;
-      const bDate = b.dataset.startDate ? new Date(`${b.dataset.startDate}T00:00:00`).getTime() : 0;
-      return aDate - bDate;
-    });
-    cards.forEach((card) => container.appendChild(card));
-  };
-
-  const updateEventDateDisplay = (card, startValue, endValue) => {
-    const startDate = new Date(`${startValue}T00:00:00`);
-    if (Number.isNaN(startDate.getTime())) {
-      return false;
-    }
-    const endDate = endValue ? new Date(`${endValue}T00:00:00`) : null;
-    if (endDate && Number.isNaN(endDate.getTime())) {
-      return false;
+      throw new Error(
+        payload.error ||
+        "Request failed."
+      );
     }
 
-    const eventDate = card.querySelector(".event-date");
-    if (!eventDate) {
-      return false;
-    }
-
-    const monthName = startDate.toLocaleString("en-US", { month: "short" });
-    const startDay = startDate.getDate();
-
-    if (endDate && endDate.getTime() !== startDate.getTime()) {
-      eventDate.classList.add("multi-day");
-      let dateRange = eventDate.querySelector(".date-range");
-      if (!dateRange) {
-        dateRange = document.createElement("div");
-        dateRange.className = "date-range";
-        eventDate.innerHTML = "";
-        eventDate.appendChild(dateRange);
-      }
-
-      let monthEl = dateRange.querySelector(".event-month");
-      if (!monthEl) {
-        monthEl = document.createElement("div");
-        monthEl.className = "event-month";
-        dateRange.appendChild(monthEl);
-      }
-      monthEl.textContent = monthName;
-
-      let displayEl = dateRange.querySelector(".date-display");
-      if (!displayEl) {
-        displayEl = document.createElement("div");
-        displayEl.className = "date-display";
-        dateRange.appendChild(displayEl);
-      }
-
-      const endMonth = endDate.toLocaleString("en-US", { month: "short" });
-      const endDay = endDate.getDate();
-      displayEl.textContent = endMonth === monthName ? `${startDay}-${endDay}` : `${startDay}-${endMonth} ${endDay}`;
-      return true;
-    }
-
-    eventDate.classList.remove("multi-day");
-    eventDate.innerHTML = "";
-    const monthEl = document.createElement("div");
-    monthEl.className = "event-month";
-    monthEl.textContent = monthName;
-    const dayEl = document.createElement("div");
-    dayEl.className = "event-day";
-    dayEl.textContent = startDay;
-    eventDate.appendChild(monthEl);
-    eventDate.appendChild(dayEl);
-    return true;
+    return response
+      .json()
+      .catch(() => ({}));
   };
 
   const closeModal = () => {
     editModal.classList.remove("is-open");
-    editModal.setAttribute("aria-hidden", "true");
+
+    editModal.setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
     activeCard = null;
     activeImageUrl = "";
+
     if (previewObjectUrl) {
-      URL.revokeObjectURL(previewObjectUrl);
+      URL.revokeObjectURL(
+        previewObjectUrl
+      );
+
       previewObjectUrl = "";
     }
+
     if (previewCard) {
       previewCard.innerHTML = "";
     }
   };
 
-  const buildPreview = () => {
-    if (!activeCard || !previewCard) {
-      return;
-    }
-
-    const clone = activeCard.cloneNode(true);
-    const actions = clone.querySelector(".news-admin-actions");
-    if (actions) {
-      actions.remove();
-    }
-
-    if (activeCard.dataset.itemType === "news") {
-      const img = clone.querySelector(".article-image img");
-      const date = clone.querySelector(".news-date");
-      const title = clone.querySelector("h3");
-      const info = clone.querySelector(".news-info");
-
-      if (img) {
-        const file = newsImageFileInput.files[0];
-        if (file && validateImageFile(file)) {
-          if (previewObjectUrl) {
-            URL.revokeObjectURL(previewObjectUrl);
-          }
-          previewObjectUrl = URL.createObjectURL(file);
-          img.setAttribute("src", previewObjectUrl);
-        } else if (activeImageUrl) {
-          img.setAttribute("src", activeImageUrl);
-        }
-      }
-      if (date) {
-        date.textContent = formatDisplayDate(newsDateInput.value.trim());
-      }
-      if (title) {
-        title.textContent = newsTitleInput.value.trim() || "Untitled";
-      }
-      if (info) {
-        info.textContent = newsInfoInput.value.trim() || "";
-      }
-    } else {
-      const title = clone.querySelector("h3");
-      const location = clone.querySelector(".event-location-text");
-      const info = clone.querySelector(".event-info");
-
-      if (title) {
-        title.textContent = eventTitleInput.value.trim() || "New event";
-      }
-      updateEventDateDisplay(clone, eventStartDateInput.value.trim(), eventEndDateInput.value.trim());
-      if (location) {
-        const text = eventLocationInput.value.trim();
-        location.textContent = text ? `📍 ${text}` : "";
-      }
-      if (info) {
-        info.textContent = eventInfoInput.value.trim() || "";
-      }
-    }
-
-    previewCard.innerHTML = "";
-    previewCard.appendChild(clone);
-  };
-
   const openModal = (card) => {
     activeCard = card;
-    const type = card.dataset.itemType;
-    newsSection.classList.remove("is-active");
-    eventSection.classList.remove("is-active");
-    newsSection.querySelectorAll("input, textarea").forEach((field) => {
-      field.disabled = true;
-    });
-    eventSection.querySelectorAll("input, textarea").forEach((field) => {
-      field.disabled = true;
-    });
+
+    const type =
+      card.dataset.itemType;
+
+    newsSection.classList.remove(
+      "is-active"
+    );
+
+    eventSection.classList.remove(
+      "is-active"
+    );
 
     if (type === "news") {
-      const img = card.querySelector(".article-image img");
-      const date = card.querySelector(".news-date");
-      const title = card.querySelector("h3");
-      const info = card.querySelector(".news-info");
-      activeImageUrl = img ? img.getAttribute("src") : "";
-      newsImageFileInput.value = "";
-      newsDateInput.value = card.dataset.newsDate || (date ? parseNewsDateValue(date.textContent.trim()) : "");
-      if (!newsDateInput.value) {
-        newsDateInput.value = getIsoDate(new Date());
-      }
-      newsTitleInput.value = title ? title.textContent.trim() : "";
-      newsInfoInput.value = info ? info.textContent.trim() : "";
-      newsSection.classList.add("is-active");
-      newsSection.querySelectorAll("input, textarea").forEach((field) => {
-        field.disabled = false;
-      });
-      modalTitle.textContent = "Edit news";
+      modalTitle.textContent =
+        "Edit news";
+
+      newsSection.classList.add(
+        "is-active"
+      );
+
+      activeImageUrl =
+        card.querySelector("img")
+          ?.src || "";
+
+      newsTitleInput.value =
+        card.querySelector("h3")
+          ?.textContent || "";
+
+      newsInfoInput.value =
+        card.querySelector(
+          ".news-info"
+        )?.textContent || "";
+
+      newsDateInput.value =
+        card.dataset.newsDate || "";
     } else {
-      const title = card.querySelector("h3");
-      const location = card.querySelector(".event-location-text");
-      const info = card.querySelector(".event-info");
-      const { start, end } = parseEventDatesFromCard(card);
-      eventTitleInput.value = title ? title.textContent.trim() : "";
-      eventStartDateInput.value = start ? getIsoDate(start) : "";
-      if (!eventStartDateInput.value || card.dataset.isNew === "true") {
-        eventStartDateInput.value = getIsoDate(new Date());
-      }
-      eventEndDateInput.value = end ? getIsoDate(end) : "";
-      eventLocationInput.value = location ? location.textContent.replace(/^📍\s*/, "").trim() : "";
-      eventInfoInput.value = info ? info.textContent.trim() : "";
-      eventSection.classList.add("is-active");
-      eventSection.querySelectorAll("input, textarea").forEach((field) => {
-        field.disabled = false;
-      });
-      modalTitle.textContent = "Edit event";
+      modalTitle.textContent =
+        "Edit event";
+
+      eventSection.classList.add(
+        "is-active"
+      );
+
+      eventTitleInput.value =
+        card.querySelector("h3")
+          ?.textContent || "";
+
+      eventInfoInput.value =
+        card.querySelector(
+          ".event-info"
+        )?.textContent || "";
+
+      eventLocationInput.value =
+        card.querySelector(
+          ".event-location-text"
+        )
+          ?.textContent
+          .replace(/^📍\s*/, "") || "";
+
+      eventStartDateInput.value =
+        card.dataset.startDate || "";
+
+      eventEndDateInput.value =
+        card.dataset.endDate || "";
     }
 
-    editModal.classList.add("is-open");
-    editModal.setAttribute("aria-hidden", "false");
-    buildPreview();
+    editModal.classList.add(
+      "is-open"
+    );
+
+    editModal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
   };
 
-  document.addEventListener("click", (event) => {
-    const addButton = event.target.closest(".admin-add-button[data-add-type]");
-    if (addButton) {
-      const type = addButton.dataset.addType;
-      const templateId = type === "news" ? "newsCardTemplate" : "eventCardTemplate";
-      const template = document.getElementById(templateId);
-      const container = type === "news" ? document.querySelector(".news-grid") : document.querySelector(".events-grid");
-      if (!template || !container) {
-        return;
-      }
+  document.addEventListener(
+    "click",
+    async (event) => {
+      const deleteButton =
+        event.target.closest(
+          ".admin-delete-button"
+        );
 
-      const fragment = template.content.cloneNode(true);
-      const newCard = fragment.querySelector("[data-item-type]");
-      if (type === "news") {
-        const featured = container.querySelector(".news-article.featured");
-        if (featured && featured.nextSibling) {
-          container.insertBefore(fragment, featured.nextSibling);
-        } else if (featured) {
-          container.appendChild(fragment);
-        } else {
-          container.prepend(fragment);
-        }
-      } else {
-        container.prepend(fragment);
-      }
+      if (deleteButton) {
+        const card =
+          deleteButton.closest(
+            "[data-item-type]"
+          );
 
-      if (newCard) {
-        openModal(newCard);
-      }
-      return;
-    }
-
-    const deleteButton = event.target.closest(".admin-delete-button");
-    if (deleteButton) {
-      const card = deleteButton.closest("[data-item-type]");
-      if (card) {
-        const id = Number(card.dataset.id);
-        if (!id || card.dataset.isNew === "true") {
-          card.remove();
+        if (!card) {
           return;
         }
-        const endpoint = card.dataset.itemType === "news" ? "news" : "events";
-        requestJson(`/api/${endpoint}/${id}`, { method: "DELETE" })
-          .then(() => card.remove())
-          .catch((error) => alert(error.message));
-      }
-      return;
-    }
 
-    const editButton = event.target.closest(".admin-edit-button");
-    if (editButton) {
-      const card = editButton.closest("[data-item-type]");
-      if (card) {
-        openModal(card);
-      }
-    }
-  });
+        const id = Number(
+          card.dataset.id
+        );
 
-  editModal.querySelectorAll("[data-admin-close]").forEach((button) => {
-    button.addEventListener("click", closeModal);
-  });
+        const endpoint =
+          card.dataset.itemType ===
+          "news"
+            ? "news"
+            : "events";
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && editModal.classList.contains("is-open")) {
-      closeModal();
-    }
-  });
+        try {
+          await requestJson(
+            `/api/${endpoint}/${id}`,
+            {
+              method: "DELETE"
+            }
+          );
+        } catch (error) {
+          alert(error.message);
+        }
 
-  editForm.addEventListener("input", () => {
-    buildPreview();
-  });
-
-  newsImageFileInput.addEventListener("change", () => {
-    const file = newsImageFileInput.files[0];
-    if (!validateImageFile(file)) {
-      newsImageFileInput.value = "";
-      return;
-    }
-    buildPreview();
-  });
-
-  editForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!activeCard) {
-      return;
-    }
-
-    if (activeCard.dataset.itemType === "news") {
-      const isNew = activeCard.dataset.isNew === "true";
-      if (!newsDateInput.value) {
-        alert("Please enter a valid news date.");
         return;
       }
-      const img = activeCard.querySelector(".article-image img");
-      const date = activeCard.querySelector(".news-date");
-      const title = activeCard.querySelector("h3");
-      const info = activeCard.querySelector(".news-info");
-      if (img) {
-        const file = newsImageFileInput.files[0];
-        if (file) {
-          if (!validateImageFile(file)) {
-            return;
-          }
-          saveButton.disabled = true;
-          try {
-            const formData = new FormData();
-            formData.append("image", file);
-            const payload = await requestJson("/admin/upload", {
-              method: "POST",
-              body: formData
-            });
-            activeImageUrl = payload.url || activeImageUrl;
-          } finally {
-            saveButton.disabled = false;
-          }
-        }
 
-        if (activeImageUrl) {
-          img.setAttribute("src", activeImageUrl);
+      const editButton =
+        event.target.closest(
+          ".admin-edit-button"
+        );
+
+      if (editButton) {
+        const card =
+          editButton.closest(
+            "[data-item-type]"
+          );
+
+        if (card) {
+          openModal(card);
         }
-        img.setAttribute("alt", newsTitleInput.value.trim() || "News image");
       }
-      if (date) {
-        date.textContent = formatDisplayDate(newsDateInput.value.trim());
+    }
+  );
+
+  editModal
+    .querySelectorAll(
+      "[data-admin-close]"
+    )
+    .forEach((button) => {
+      button.addEventListener(
+        "click",
+        closeModal
+      );
+    });
+
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        event.key === "Escape" &&
+        editModal.classList.contains(
+          "is-open"
+        )
+      ) {
+        closeModal();
       }
-      if (title) {
-        title.textContent = newsTitleInput.value.trim();
-      }
-      if (info) {
-        info.textContent = newsInfoInput.value.trim();
+    }
+  );
+
+  editForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+      if (!activeCard) {
+        return;
       }
 
-      activeCard.dataset.newsDate = newsDateInput.value.trim();
-      const category = activeCard.dataset.category || "Announcements";
-      const payload = {
-        title: newsTitleInput.value.trim(),
-        info: newsInfoInput.value.trim(),
-        date: newsDateInput.value.trim(),
-        imageUrl: activeImageUrl,
-        category
-      };
+      saveButton.disabled = true;
+
       try {
-        if (isNew) {
-          const result = await requestJson("/api/news", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          activeCard.dataset.id = result.id;
-          activeCard.dataset.isNew = "false";
+        if (
+          activeCard.dataset.itemType ===
+          "news"
+        ) {
+          const isNew =
+            activeCard.dataset.isNew ===
+            "true";
+
+          const file =
+            newsImageFileInput.files[0];
+
+          if (file) {
+            if (
+              !validateImageFile(file)
+            ) {
+              return;
+            }
+
+            const formData =
+              new FormData();
+
+            formData.append(
+              "image",
+              file
+            );
+
+            const uploadResult =
+              await requestJson(
+                "/admin/upload",
+                {
+                  method: "POST",
+                  body: formData
+                }
+              );
+
+            activeImageUrl =
+              uploadResult.url || "";
+          }
+
+          const payload = {
+            title:
+              newsTitleInput.value.trim(),
+
+            info:
+              newsInfoInput.value.trim(),
+
+            date:
+              newsDateInput.value.trim(),
+
+            imageUrl:
+              activeImageUrl,
+
+            category:
+              activeCard.dataset
+                .category ||
+              "Announcements"
+          };
+
+          if (isNew) {
+            await requestJson(
+              "/api/news",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify(
+                  payload
+                )
+              }
+            );
+          } else {
+            const id = Number(
+              activeCard.dataset.id
+            );
+
+            await requestJson(
+              `/api/news/${id}`,
+              {
+                method: "PUT",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify(
+                  payload
+                )
+              }
+            );
+          }
         } else {
-          const id = Number(activeCard.dataset.id);
-          await requestJson(`/api/news/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
+          const isNew =
+            activeCard.dataset.isNew ===
+            "true";
+
+          const payload = {
+            title:
+              eventTitleInput.value.trim(),
+
+            info:
+              eventInfoInput.value.trim(),
+
+            location:
+              eventLocationInput.value.trim(),
+
+            startDate:
+              eventStartDateInput.value.trim(),
+
+            endDate:
+              eventEndDateInput.value.trim(),
+
+            duration:
+              activeCard.dataset
+                .duration || ""
+          };
+
+          if (isNew) {
+            await requestJson(
+              "/api/events",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify(
+                  payload
+                )
+              }
+            );
+          } else {
+            const id = Number(
+              activeCard.dataset.id
+            );
+
+            await requestJson(
+              `/api/events/${id}`,
+              {
+                method: "PUT",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify(
+                  payload
+                )
+              }
+            );
+          }
         }
-        sortNewsByDate();
+
+        closeModal();
       } catch (error) {
         alert(error.message);
-        return;
-      }
-    } else {
-      const isNew = activeCard.dataset.isNew === "true";
-      if (!eventStartDateInput.value) {
-        alert("Please enter a valid event start date.");
-        return;
-      }
-      if (eventEndDateInput.value && eventEndDateInput.value < eventStartDateInput.value) {
-        alert("Event end date must be the same or after the start date.");
-        return;
-      }
-      const title = activeCard.querySelector("h3");
-      const location = activeCard.querySelector(".event-location-text");
-      const info = activeCard.querySelector(".event-info");
-      const duration = activeCard.dataset.duration || "";
-      if (title) {
-        title.textContent = eventTitleInput.value.trim();
-      }
-      updateEventDateDisplay(activeCard, eventStartDateInput.value.trim(), eventEndDateInput.value.trim());
-      if (location) {
-        const text = eventLocationInput.value.trim();
-        location.textContent = text ? `📍 ${text}` : "";
-      }
-      if (info) {
-        info.textContent = eventInfoInput.value.trim();
-      }
-
-      activeCard.dataset.startDate = eventStartDateInput.value.trim();
-      activeCard.dataset.endDate = eventEndDateInput.value.trim();
-      const payload = {
-        title: eventTitleInput.value.trim(),
-        info: eventInfoInput.value.trim(),
-        location: eventLocationInput.value.trim(),
-        startDate: eventStartDateInput.value.trim(),
-        endDate: eventEndDateInput.value.trim(),
-        duration
-      };
-      try {
-        if (isNew) {
-          const result = await requestJson("/api/events", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          activeCard.dataset.id = result.id;
-          activeCard.dataset.isNew = "false";
-        } else {
-          const id = Number(activeCard.dataset.id);
-          await requestJson(`/api/events/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-        }
-        sortEventsByDate();
-      } catch (error) {
-        alert(error.message);
-        return;
+      } finally {
+        saveButton.disabled = false;
       }
     }
+  );
 
-    closeModal();
-  });
-
-  sortNewsByDate();
-  sortEventsByDate();
-
-  if (window.io) {
-    const socket = window.io();
-    socket.on("news:updated", (payload) => {
-      if (!payload || !payload.action) {
+  socket.on(
+    "news:updated",
+    (payload) => {
+      if (
+        !payload ||
+        !payload.action
+      ) {
         return;
       }
-      const container = document.querySelector(".news-grid");
+
+      const container =
+        document.querySelector(
+          ".news-grid"
+        );
+
       if (!container) {
         return;
       }
-      if (payload.action === "delete") {
-        const existing = container.querySelector(`[data-item-type="news"][data-id="${payload.id}"]`);
+
+      if (
+        payload.action === "delete"
+      ) {
+        const existing =
+          container.querySelector(
+            `[data-item-type="news"][data-id="${payload.id}"]`
+          );
+
         if (existing) {
           existing.remove();
-          sortNewsByDate();
         }
+
         return;
       }
 
-      if (payload.action === "upsert" && payload.item) {
-        const existing = container.querySelector(`[data-item-type="news"][data-id="${payload.item.id}"]`);
-        const card = buildNewsCard(payload.item);
+      if (
+        payload.action ===
+          "upsert" &&
+        payload.item
+      ) {
+        const existing =
+          container.querySelector(
+            `[data-item-type="news"][data-id="${payload.item.id}"]`
+          );
+
+        const card =
+          buildNewsCard(
+            payload.item
+          );
+
         if (existing) {
-          existing.replaceWith(card);
-          animateCard(card, "update");
-        } else {
-          container.appendChild(card);
-          animateCard(card, "enter");
-        }
-        sortNewsByDate();
-      }
-    });
+          existing.replaceWith(
+            card
+          );
 
-    socket.on("events:updated", (payload) => {
-      if (!payload || !payload.action) {
+          animateCard(
+            card,
+            "update"
+          );
+        } else {
+          container.prepend(card);
+
+          animateCard(
+            card,
+            "enter"
+          );
+        }
+      }
+    }
+  );
+
+  socket.on(
+    "events:updated",
+    (payload) => {
+      if (
+        !payload ||
+        !payload.action
+      ) {
         return;
       }
-      const container = document.querySelector(".events-grid");
+
+      const container =
+        document.querySelector(
+          ".events-grid"
+        );
+
       if (!container) {
         return;
       }
-      if (payload.action === "delete") {
-        const existing = container.querySelector(`[data-item-type="event"][data-id="${payload.id}"]`);
+
+      if (
+        payload.action === "delete"
+      ) {
+        const existing =
+          container.querySelector(
+            `[data-item-type="event"][data-id="${payload.id}"]`
+          );
+
         if (existing) {
           existing.remove();
-          sortEventsByDate();
         }
+
         return;
       }
 
-      if (payload.action === "upsert" && payload.item) {
-        const existing = container.querySelector(`[data-item-type="event"][data-id="${payload.item.id}"]`);
-        const card = buildEventCard(payload.item);
+      if (
+        payload.action ===
+          "upsert" &&
+        payload.item
+      ) {
+        const existing =
+          container.querySelector(
+            `[data-item-type="event"][data-id="${payload.item.id}"]`
+          );
+
+        const card =
+          buildEventCard(
+            payload.item
+          );
+
         if (existing) {
-          existing.replaceWith(card);
-          animateCard(card, "update");
+          existing.replaceWith(
+            card
+          );
+
+          animateCard(
+            card,
+            "update"
+          );
         } else {
-          container.appendChild(card);
-          animateCard(card, "enter");
+          container.prepend(card);
+
+          animateCard(
+            card,
+            "enter"
+          );
         }
-        sortEventsByDate();
       }
-    });
-  }
+    }
+  );
 });
