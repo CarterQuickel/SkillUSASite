@@ -25,22 +25,39 @@
       </section>
 
             <section class="upcoming-events">
-        <div class="events-header">
-          <h2>Upcoming Calendar Events</h2>
-          <p>Mark your calendars for these important SkillsUSA dates and events.</p>
-        </div>
+              <div class="events-header">
+                <div class="section-title-row">
+                  <h2>Upcoming Calendar Events</h2>
+                  <% if (isAdmin) { %>
+                    <button class="admin-icon-button admin-add-button" type="button" title="Add event" aria-label="Add event" data-add-type="event">
+                      <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+                    </button>
+                  <% } %>
+                </div>
+                <p>Mark your calendars for these important SkillsUSA dates and events.</p>
+              </div>
 
         <div class="events-grid">
           <!-- Single Day Event -->
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date">
               <div class="event-month">May</div>
               <div class="event-day">15</div>
             </div>
             <div class="event-content">
               <h3>Regional Qualifier Round 1</h3>
-              <p class="event-location">📍 York County School of Technology</p>
-              <p>
+              <p class="event-location event-location-text">📍 York County School of Technology</p>
+              <p class="event-info">
                 First round of regional qualifiers. Students compete in various technical skills to
                 advance to the next round.
               </p>
@@ -49,7 +66,17 @@
           </div>
 
           <!-- Multi-Day Event -->
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date multi-day">
               <div class="date-range">
                 <div class="event-month">May</div>
@@ -59,8 +86,8 @@
             <div class="event-content">
               <h3>Leadership Training Intensive</h3>
               <p class="event-duration">⏱️ 3-Day Workshop</p>
-              <p class="event-location">📍 Conference Center</p>
-              <p>
+              <p class="event-location event-location-text">📍 Conference Center</p>
+              <p class="event-info">
                 Join our intensive 3-day leadership development workshop. Build communication and team-building
                 skills essential for competition success. Includes meals and materials.
               </p>
@@ -68,15 +95,25 @@
             </div>
           </div>
 
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date">
               <div class="event-month">June</div>
               <div class="event-day">5</div>
             </div>
             <div class="event-content">
               <h3>Regional Qualifier Finals</h3>
-              <p class="event-location">📍 York County School of Technology</p>
-              <p>
+              <p class="event-location event-location-text">📍 York County School of Technology</p>
+              <p class="event-info">
                 Final round of regional qualifications. Top performers will advance to the state
                 championships.
               </p>
@@ -85,7 +122,17 @@
           </div>
 
           <!-- Multi-Day Event -->
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date multi-day">
               <div class="date-range">
                 <div class="event-month">June</div>
@@ -95,8 +142,8 @@
             <div class="event-content">
               <h3>State Championship Preparation Boot Camp</h3>
               <p class="event-duration">⏱️ 4-Day Boot Camp</p>
-              <p class="event-location">📍 Main Campus</p>
-              <p>
+              <p class="event-location event-location-text">📍 Main Campus</p>
+              <p class="event-info">
                 Intensive 4-day preparation boot camp for students advancing to state championships. Learn
                 from experienced judges, mentors, and industry professionals.
               </p>
@@ -105,7 +152,17 @@
           </div>
 
           <!-- Multi-Day Event -->
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date multi-day">
               <div class="date-range">
                 <div class="event-month">July</div>
@@ -115,8 +172,8 @@
             <div class="event-content">
               <h3>State Championship Competition</h3>
               <p class="event-duration">⏱️ 4-Day Event</p>
-              <p class="event-location">📍 State Conference Center</p>
-              <p>
+              <p class="event-location event-location-text">📍 State Conference Center</p>
+              <p class="event-info">
                 The pinnacle event! Our students compete against the best from across Pennsylvania for
                 state titles and advancement to nationals. Multiple skill competitions, networking, and awards.
               </p>
@@ -125,7 +182,17 @@
           </div>
 
           <!-- Multi-Day Event -->
-          <div class="event-card">
+          <div class="event-card" data-item-type="event">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="event-date multi-day">
               <div class="date-range">
                 <div class="event-month">Aug</div>
@@ -135,8 +202,8 @@
             <div class="event-content">
               <h3>Summer Skill Development Programs</h3>
               <p class="event-duration">⏱️ Full Month Program</p>
-              <p class="event-location">📍 Various Locations</p>
-              <p>
+              <p class="event-location event-location-text">📍 Various Locations</p>
+              <p class="event-info">
                 Intensive month-long programs offering skill development in carpentry, culinary arts,
                 information technology, health sciences, and more. Flexible scheduling available.
               </p>
@@ -148,23 +215,40 @@
 
       <section class="news-container">
         <div class="news-header">
-          <h2>Latest News</h2>
+          <div class="section-title-row">
+            <h2>Latest News</h2>
+            <% if (isAdmin) { %>
+              <button class="admin-icon-button admin-add-button" type="button" title="Add news" aria-label="Add news" data-add-type="news">
+                <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+              </button>
+            <% } %>
+          </div>
           <p>Follow our latest announcements, competition results, and student achievements.</p>
         </div>
 
         <div class="news-grid">
           <!-- Featured Article -->
-          <article class="news-article featured">
+          <article class="news-article featured" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image featured-image">
               <img src="https://via.placeholder.com/600x400?text=Featured+Story" alt="Featured article" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">May 5, 2026</span>
+                <span class="article-date news-date">May 5, 2026</span>
                 <span class="article-category featured-category">Competition Results</span>
               </div>
               <h3>State Championship Winners Announced</h3>
-              <p>
+              <p class="news-info">
                 Our SkillsUSA team brought home multiple medals from the state championships this year.
                 Read about the amazing performances and achievements of our talented students who competed
                 against the best in the state.
@@ -174,17 +258,27 @@
           </article>
 
           <!-- Regular Articles -->
-          <article class="news-article">
+          <article class="news-article" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image">
               <img src="https://via.placeholder.com/400x300?text=Article+2" alt="Article 2" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">April 28, 2026</span>
+                <span class="article-date news-date">April 28, 2026</span>
                 <span class="article-category">Events</span>
               </div>
               <h3>Spring Training Workshop Scheduled</h3>
-              <p>
+              <p class="news-info">
                 Join us for an intensive training workshop to prepare for upcoming competitions. Industry
                 experts will lead sessions in various technical skills.
               </p>
@@ -192,17 +286,27 @@
             </div>
           </article>
 
-          <article class="news-article">
+          <article class="news-article" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image">
               <img src="https://via.placeholder.com/400x300?text=Article+3" alt="Article 3" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">April 20, 2026</span>
+                <span class="article-date news-date">April 20, 2026</span>
                 <span class="article-category">Student Spotlight</span>
               </div>
               <h3>Student Profile: Rising Star in Carpentry</h3>
-              <p>
+              <p class="news-info">
                 Meet this month's featured student and learn about their journey with SkillsUSA and how
                 the program has shaped their career path and professional goals.
               </p>
@@ -210,17 +314,27 @@
             </div>
           </article>
 
-          <article class="news-article">
+          <article class="news-article" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image">
               <img src="https://via.placeholder.com/400x300?text=Article+4" alt="Article 4" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">April 15, 2026</span>
+                <span class="article-date news-date">April 15, 2026</span>
                 <span class="article-category">Announcements</span>
               </div>
               <h3>Registration Open for Summer Programs</h3>
-              <p>
+              <p class="news-info">
                 Don't miss out! Registration is now open for our summer training programs. Spaces are
                 limited, so register early to secure your spot in your preferred program.
               </p>
@@ -228,17 +342,27 @@
             </div>
           </article>
 
-          <article class="news-article">
+          <article class="news-article" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image">
               <img src="https://via.placeholder.com/400x300?text=Article+5" alt="Article 5" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">April 8, 2026</span>
+                <span class="article-date news-date">April 8, 2026</span>
                 <span class="article-category">Events</span>
               </div>
               <h3>Local Competition Results In</h3>
-              <p>
+              <p class="news-info">
                 Congratulations to all participants in the local competition! Check out who's advancing to
                 the regional competition and see detailed results from each event category.
               </p>
@@ -246,17 +370,27 @@
             </div>
           </article>
 
-          <article class="news-article">
+          <article class="news-article" data-item-type="news">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
             <div class="article-image">
               <img src="https://via.placeholder.com/400x300?text=Article+6" alt="Article 6" />
             </div>
             <div class="article-content">
               <div class="article-meta">
-                <span class="article-date">April 1, 2026</span>
+                <span class="article-date news-date">April 1, 2026</span>
                 <span class="article-category">Student Spotlight</span>
               </div>
               <h3>Scholarship Opportunity for SkillsUSA Members</h3>
-              <p>
+              <p class="news-info">
                 Several of our corporate sponsors are offering scholarships specifically for SkillsUSA members.
                 Learn about eligibility requirements and how to apply for these valuable opportunities.
               </p>
@@ -305,7 +439,102 @@
           </ul>
         </div>
       </section>
+      <% if (isAdmin) { %>
+        <div class="admin-modal" id="adminEditModal" aria-hidden="true">
+          <div class="admin-modal-backdrop" data-admin-close></div>
+          <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+            <div class="admin-modal-header">
+              <h3 id="adminModalTitle">Edit item</h3>
+              <button class="admin-modal-close" type="button" data-admin-close aria-label="Close">Close</button>
+            </div>
+            <form class="admin-modal-form" id="adminEditForm">
+              <div class="admin-modal-section" data-admin-section="news">
+                <label for="adminNewsImage">Image URL</label>
+                <input id="adminNewsImage" name="adminNewsImage" type="text" />
+
+                <label for="adminNewsDate">Date</label>
+                <input id="adminNewsDate" name="adminNewsDate" type="text" />
+
+                <label for="adminNewsTitle">Title</label>
+                <input id="adminNewsTitle" name="adminNewsTitle" type="text" />
+
+                <label for="adminNewsInfo">Info</label>
+                <textarea id="adminNewsInfo" name="adminNewsInfo" rows="5"></textarea>
+              </div>
+
+              <div class="admin-modal-section" data-admin-section="event">
+                <label for="adminEventTitle">Event name</label>
+                <input id="adminEventTitle" name="adminEventTitle" type="text" />
+
+                <label for="adminEventMonth">Month</label>
+                <input id="adminEventMonth" name="adminEventMonth" type="text" />
+
+                <label for="adminEventDate">Date</label>
+                <input id="adminEventDate" name="adminEventDate" type="text" />
+
+                <label for="adminEventLocation">Location</label>
+                <input id="adminEventLocation" name="adminEventLocation" type="text" />
+
+                <label for="adminEventInfo">Info</label>
+                <textarea id="adminEventInfo" name="adminEventInfo" rows="5"></textarea>
+              </div>
+
+              <div class="admin-modal-actions">
+                <button class="admin-modal-save" type="submit">Save</button>
+                <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <template id="eventCardTemplate">
+          <div class="event-card" data-item-type="event">
+            <div class="news-admin-actions">
+              <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+              </button>
+              <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="event-date">
+              <div class="event-month">May</div>
+              <div class="event-day">1</div>
+            </div>
+            <div class="event-content">
+              <h3>New event</h3>
+              <p class="event-location event-location-text">📍 New location</p>
+              <p class="event-info">Add event details here.</p>
+              <a href="#" class="event-link">Learn More →</a>
+            </div>
+          </div>
+        </template>
+        <template id="newsCardTemplate">
+          <article class="news-article" data-item-type="news">
+            <div class="news-admin-actions">
+              <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+              </button>
+              <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="article-image">
+              <img src="/icons/placeholder.png" alt="News image" />
+            </div>
+            <div class="article-content">
+              <div class="article-meta">
+                <span class="article-date news-date">May 7, 2026</span>
+                <span class="article-category">Announcements</span>
+              </div>
+              <h3>New update</h3>
+              <p class="news-info">Add news details here.</p>
+              <a href="#" class="read-more">Read More →</a>
+            </div>
+          </article>
+        </template>
+      <% } %>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/js/news.js"></script>
   </body>
 </html>

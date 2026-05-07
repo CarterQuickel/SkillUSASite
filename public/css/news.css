@@ -18,6 +18,14 @@
   margin-bottom: 3rem;
 }
 
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .news-header h2 {
   font-family: "Spectral", "Times New Roman", serif;
   font-size: 2rem;
@@ -26,6 +34,11 @@
   position: relative;
   display: inline-block;
   width: 100%;
+}
+
+.section-title-row h2 {
+  margin-bottom: 0;
+  width: auto;
 }
 
 .news-header h2::after {
@@ -58,6 +71,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .news-article:hover {
@@ -175,6 +189,190 @@
 
 .read-more:hover {
   color: var(--gold-dark);
+}
+
+.news-admin-actions {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.admin-icon-button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #d5dbe6;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--navy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 6px 14px rgba(5, 22, 47, 0.1);
+}
+
+.admin-icon-button img {
+  width: 16px;
+  height: 16px;
+}
+
+.admin-icon-button:hover {
+  background: #f4f7fb;
+  border-color: #c2cad9;
+  transform: translateY(-1px);
+}
+
+.admin-edit-button {
+  background: var(--gold);
+  border-color: var(--gold-dark);
+  color: #2a1f06;
+}
+
+.admin-edit-button:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+.admin-delete-button {
+  background: var(--red);
+  border-color: #8f1f22;
+  color: #ffffff;
+}
+
+.admin-delete-button:hover {
+  background: #8f1f22;
+  border-color: #8f1f22;
+}
+
+.admin-add-button {
+  background: var(--gold);
+  border-color: var(--gold-dark);
+  color: #2a1f06;
+  box-shadow: 0 8px 18px rgba(201, 162, 76, 0.3);
+}
+
+.admin-add-button img {
+  width: 14px;
+  height: 14px;
+}
+
+.admin-add-button:hover {
+  background: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
+
+.admin-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.admin-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 22, 47, 0.55);
+}
+
+.admin-modal-dialog {
+  position: relative;
+  background: #ffffff;
+  width: min(560px, 92vw);
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 24px 60px rgba(5, 22, 47, 0.3);
+  z-index: 1;
+}
+
+.admin-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.admin-modal-header h3 {
+  font-family: "Spectral", "Times New Roman", serif;
+  font-size: 1.4rem;
+  color: var(--navy);
+}
+
+.admin-modal-close {
+  background: transparent;
+  border: none;
+  color: #3c4b60;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.admin-modal-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-modal-section {
+  display: none;
+  gap: 0.6rem;
+}
+
+.admin-modal-section.is-active {
+  display: grid;
+}
+
+.admin-modal-form label {
+  font-weight: 600;
+  color: #2f3e55;
+}
+
+.admin-modal-form input,
+.admin-modal-form textarea {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #d6dde8;
+  font-family: "Outfit", "Arial", sans-serif;
+  font-size: 0.95rem;
+}
+
+.admin-modal-actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: flex-end;
+  margin-top: 0.4rem;
+}
+
+.admin-modal-save {
+  background: var(--navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-modal-cancel {
+  background: #f0f2f5;
+  color: #2f3e55;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Pagination */
@@ -347,6 +545,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   border-left: 4px solid var(--gold);
+  position: relative;
 }
 
 .event-card:hover {
