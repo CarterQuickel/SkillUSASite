@@ -2,3 +2,5 @@
 *.log
 *.env
 *.db
+*.sqlite3
+skillusa.db
