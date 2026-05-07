@@ -1,31 +1,6 @@
-const express = require("express");
-<<<<<<< HEAD
 const path = require("path");
-const http = require("http");
-const session = require("express-session");
-const SQLiteStore = require("connect-sqlite3")(session);
-const {
-  initializeDatabase,
-  verifyAdminCredentials,
-  getNewsItems,
-  getNewsItemById,
-  createNewsItem,
-  updateNewsItem,
-  deleteNewsItem,
-  getEventItems,
-  getEventItemById,
-  createEventItem,
-  updateEventItem,
-  deleteEventItem,
-  getStaffBySection
-} = require("./db");
-
-const app = express();
-const server = http.createServer(app);
-
-const io = require("socket.io")(server);
-
-=======
+const fs = require("fs");
+const express = require("express");
 const session = require("express-session");
 const multer = require("multer");
 const {
@@ -43,413 +18,132 @@ const {
 } = require("./db");
 
 const app = express();
->>>>>>> parent of 4d5fa78 (ok)
 const PORT = process.env.PORT || 3000;
-
-/*
-  INIT DATABASE
-*/
-initializeDatabase()
-  .then(() => {
-    console.log("Database initialized");
-  })
-  .catch(err => {
-    console.error("Database init failed:", err);
-  });
-
-/*
-  MIDDLEWARE
-*/
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-
-app.use(
-  session({
-    store: new SQLiteStore({
-      db: "sessions.sqlite",
-      dir: "./data"
-    }),
-
-    secret: "skillsusa-secret-key",
-
-    resave: false,
-    saveUninitialized: false,
-
-    cookie: {
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24
-    }
-  })
-);
-
-app.use(express.static(path.join(__dirname, "public")));
+const HOST = process.env.HOST || "0.0.0.0";
+const PUBLIC_HOST = process.env.PUBLIC_HOST || "172.16.3.200";
+const uploadsDir = path.join(__dirname, "public", "uploads");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-/*
-  GLOBAL ADMIN FLAG
-*/
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(
+	session({
+		name: "skillusa.admin",
+		secret: process.env.SESSION_SECRET || "dev-only-change-this",
+		resave: false,
+		saveUninitialized: false,
+			rolling: true,
+		cookie: {
+			httpOnly: true,
+			sameSite: "lax",
+				maxAge: 10 * 60 * 1000
+		}
+	})
+);
 app.use((req, res, next) => {
-
-  res.locals.isAdmin = !!req.session.isAdmin;
-
-  next();
+	res.locals.isAdmin = Boolean(req.session.isAdmin);
+	next();
 });
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "SkillsUSARealImages")));
 
-/*
-  HOME
-*/
-app.get("/", async (req, res) => {
-
-  try {
-
-    const advisors = await getStaffBySection("Advisors");
-    const officers = await getStaffBySection("Officers");
-
-    res.render("index", {
-      advisors,
-      officers
-    });
-
-  } catch (err) {
-
-    console.error(err);
-    res.status(500).send("Server Error");
-
-  }
-
-});
-
-/*
-  NEWS PAGE
-*/
-app.get("/news", async (req, res) => {
-
-  try {
-
-    const newsItems = await getNewsItems();
-
-    res.render("news", {
-      newsItems
-    });
-
-  } catch (err) {
-
-    console.error(err);
-    res.status(500).send("Server Error");
-
-  }
-
-});
-
-/*
-  EVENTS PAGE
-*/
-app.get("/events", async (req, res) => {
-
-  try {
-
-    const eventItems = await getEventItems();
-
-    res.render("events", {
-      eventItems
-    });
-
-  } catch (err) {
-
-    console.error(err);
-    res.status(500).send("Server Error");
-
-  }
-
-});
-
-/*
-  LOGIN PAGE
-*/
-app.get("/login", (req, res) => {
-
-  res.render("login", {
-    error: null
-  });
-
-});
-
-/*
-  LOGIN POST
-*/
-app.post("/login", async (req, res) => {
-
-  const { username, password } = req.body;
-
-  try {
-
-    const valid = await verifyAdminCredentials(
-      username,
-      password
-    );
-
-    if (!valid) {
-
-      return res.render("login", {
-        error: "Invalid credentials"
-      });
-
-    }
-
-    req.session.isAdmin = true;
-
-    res.redirect("/news");
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.render("login", {
-      error: "Login failed"
-    });
-
-  }
-
-});
-
-/*
-  LOGOUT
-*/
-app.get("/logout", (req, res) => {
-
-  req.session.destroy(() => {
-    res.redirect("/");
-  });
-
-});
-
-/*
-  ADMIN CHECK
-*/
-function requireAdmin(req, res, next) {
-
-  if (!req.session.isAdmin) {
-
-    return res.status(401).json({
-      error: "Unauthorized"
-    });
-
-  }
-
-  next();
+if (!fs.existsSync(uploadsDir)) {
+	fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-/*
-  =========================
-  NEWS API
-  =========================
-*/
-
-/*
-  CREATE NEWS
-*/
-app.post("/api/news", requireAdmin, async (req, res) => {
-
-  try {
-
-    const id = await createNewsItem(req.body);
-
-    const createdItem = await getNewsItemById(id);
-
-    io.emit("newsCreated", createdItem);
-
-    res.json(createdItem);
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to create news"
-    });
-
-  }
-
+const upload = multer({
+	storage: multer.diskStorage({
+		destination: uploadsDir,
+		filename: (req, file, cb) => {
+			const timestamp = Date.now();
+			const random = Math.round(Math.random() * 1e9);
+			const ext = path.extname(file.originalname).toLowerCase();
+			cb(null, `news-${timestamp}-${random}${ext}`);
+		}
+	}),
+	limits: { fileSize: 50 * 1024 * 1024 },
+	fileFilter: (req, file, cb) => {
+		const allowed = [".png", ".jpg", ".jpeg"];
+		const ext = path.extname(file.originalname).toLowerCase();
+		if (!allowed.includes(ext)) {
+			cb(new Error("Only PNG and JPG images are allowed."));
+			return;
+		}
+		cb(null, true);
+	}
 });
 
-/*
-  UPDATE NEWS
-*/
-app.put("/api/news/:id", requireAdmin, async (req, res) => {
-
-  try {
-
-    const id = req.params.id;
-
-    await updateNewsItem(id, req.body);
-
-    const updatedItem = await getNewsItemById(id);
-
-    io.emit("newsUpdated", updatedItem);
-
-    res.json(updatedItem);
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to update news"
-    });
-
-  }
-
+app.get("/", (req, res) => {
+	res.render("index");
 });
 
-/*
-  DELETE NEWS
-*/
-app.delete("/api/news/:id", requireAdmin, async (req, res) => {
-
-  try {
-
-    const id = req.params.id;
-
-    await deleteNewsItem(id);
-
-    io.emit("newsDeleted", {
-      id
-    });
-
-    res.json({
-      success: true
-    });
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to delete news"
-    });
-
-  }
-
+app.get("/bars", (req, res) => {
+    res.render("bars");
 });
 
-/*
-  =========================
-  EVENTS API
-  =========================
-*/
-
-/*
-  CREATE EVENT
-*/
-app.post("/api/events", requireAdmin, async (req, res) => {
-
-  try {
-
-    const id = await createEventItem(req.body);
-
-    const createdItem = await getEventItemById(id);
-
-    io.emit("eventCreated", createdItem);
-
-    res.json(createdItem);
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to create event"
-    });
-
-  }
-
+app.get("/about", (req, res) => {
+	res.render("about");
 });
 
-/*
-  UPDATE EVENT
-*/
-app.put("/api/events/:id", requireAdmin, async (req, res) => {
+app.get("/admin/login", (req, res) => {
+	if (req.session.isAdmin) {
+		res.redirect("/admin");
+		return;
+	}
 
-  try {
-
-    const id = req.params.id;
-
-    await updateEventItem(id, req.body);
-
-    const updatedItem = await getEventItemById(id);
-
-    io.emit("eventUpdated", updatedItem);
-
-    res.json(updatedItem);
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to update event"
-    });
-
-  }
-
+	res.render("admin-login", { error: null, message: null, username: "" });
 });
 
-/*
-  DELETE EVENT
-*/
-app.delete("/api/events/:id", requireAdmin, async (req, res) => {
+app.post("/admin/login", async (req, res, next) => {
+	try {
+		const username = (req.body.username || "").trim();
+		const password = req.body.password || "";
+		const isValid = await verifyAdminCredentials(username, password);
+		if (!isValid) {
+			res.status(401).render("admin-login", {
+				error: "Invalid username or password.",
+				message: null,
+				username
+			});
+			return;
+		}
 
-  try {
-
-    const id = req.params.id;
-
-    await deleteEventItem(id);
-
-    io.emit("eventDeleted", {
-      id
-    });
-
-    res.json({
-      success: true
-    });
-
-  } catch (err) {
-
-    console.error(err);
-
-    res.status(500).json({
-      error: "Failed to delete event"
-    });
-
-  }
-
+		req.session.isAdmin = true;
+		req.session.adminUsername = username;
+		res.redirect("/");
+	} catch (error) {
+		next(error);
+	}
 });
 
-/*
-  SOCKET.IO
-*/
-io.on("connection", socket => {
+app.get("/admin", (req, res) => {
+	if (!req.session.isAdmin) {
+		res.redirect("/admin/login");
+		return;
+	}
 
-  console.log("User connected");
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
-
+	res.render("admin-dashboard", { username: req.session.adminUsername || "admin" });
 });
 
-/*
-  START SERVER
-*/
-server.listen(PORT, () => {
-
-  console.log(`Server running on port ${PORT}`);
-
-<<<<<<< HEAD
+app.post("/admin/logout", (req, res, next) => {
+	req.session.destroy((error) => {
+		if (error) {
+			next(error);
+			return;
+		}
+		res.clearCookie("skillusa.admin");
+		res.redirect("/admin/login");
+	});
 });
-=======
+
+app.post("/admin/upload", (req, res) => {
+	if (!req.session.isAdmin) {
+		res.status(403).json({ error: "Unauthorized" });
+		return;
+	}
+
 	upload.single("image")(req, res, (error) => {
 		if (error) {
 			res.status(400).json({ error: error.message });
@@ -724,4 +418,3 @@ startServer().catch((error) => {
 	console.error("Failed to start server:", error);
 	process.exit(1);
 });
->>>>>>> parent of 4d5fa78 (ok)

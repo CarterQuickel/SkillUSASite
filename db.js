@@ -408,133 +408,37 @@ const verifyAdminCredentials = async (username, password) => {
 };
 
 const getNewsItems = async () => {
-
   const db = getDb();
-
   return all(
     db,
-    `
-      SELECT
-        id,
-        title,
-        info,
-        image_url,
-        date,
-        category,
-        is_featured
-      FROM news_items
-      ORDER BY
-        is_featured DESC,
-        date DESC,
-        id DESC
-    `
+    `SELECT id, title, info, image_url, date, category, is_featured
+     FROM news_items
+     ORDER BY is_featured DESC, date DESC, id DESC`
   );
-
 };
 
-<<<<<<< HEAD
-const getNewsItemById = async (id) => {
-
-  const db = getDb();
-
-  return get(
-    db,
-    `
-      SELECT
-        id,
-        title,
-        info,
-        image_url,
-        date,
-        category,
-        is_featured
-      FROM news_items
-      WHERE id = ?
-    `,
-    [id]
-  );
-
-};
-
-const createNewsItem = async ({
-  title,
-  info,
-  imageUrl,
-  date,
-  category,
-  isFeatured
-}) => {
-
-=======
 const createNewsItem = async ({ title, info, imageUrl, date, category, isFeatured }) => {
->>>>>>> parent of 4d5fa78 (ok)
   const db = getDb();
-
   const result = await run(
     db,
-    `
-      INSERT INTO news_items (
-        title,
-        info,
-        image_url,
-        date,
-        category,
-        is_featured
-      )
-      VALUES (?, ?, ?, ?, ?, ?)
-    `,
-    [
-      title,
-      info,
-      imageUrl,
-      date,
-      category,
-      isFeatured ? 1 : 0
-    ]
+    `INSERT INTO news_items (title, info, image_url, date, category, is_featured)
+     VALUES (?, ?, ?, ?, ?, ?)`
+    ,
+    [title, info, imageUrl, date, category, isFeatured ? 1 : 0]
   );
-
   return result.lastID;
 };
 
-const updateNewsItem = async (
-  id,
-  {
-    title,
-    info,
-    imageUrl,
-    date,
-    category,
-    isFeatured
-  }
-) => {
-
+const updateNewsItem = async (id, { title, info, imageUrl, date, category }) => {
   const db = getDb();
-
   await run(
     db,
-    `
-      UPDATE news_items
-      SET
-        title = ?,
-        info = ?,
-        image_url = ?,
-        date = ?,
-        category = ?,
-        is_featured = ?,
-        updated_at = datetime('now')
-      WHERE id = ?
-    `,
-    [
-      title,
-      info,
-      imageUrl,
-      date,
-      category,
-      isFeatured ? 1 : 0,
-      id
-    ]
+    `UPDATE news_items
+     SET title = ?, info = ?, image_url = ?, date = ?, category = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [title, info, imageUrl, date, category, id]
   );
-
 };
 
 const deleteNewsItem = async (id) => {
