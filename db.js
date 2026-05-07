@@ -432,6 +432,7 @@ const getNewsItems = async () => {
 
 };
 
+<<<<<<< HEAD
 const getNewsItemById = async (id) => {
 
   const db = getDb();
@@ -464,6 +465,9 @@ const createNewsItem = async ({
   isFeatured
 }) => {
 
+=======
+const createNewsItem = async ({ title, info, imageUrl, date, category, isFeatured }) => {
+>>>>>>> parent of 4d5fa78 (ok)
   const db = getDb();
 
   const result = await run(
@@ -548,17 +552,6 @@ const getEventItems = async () => {
   );
 };
 
-const getEventItemById = async (id) => {
-  const db = getDb();
-  return get(
-    db,
-    `SELECT id, title, info, location, start_date, end_date, duration
-     FROM event_items
-     WHERE id = ?`,
-    [id]
-  );
-};
-
 const createEventItem = async ({ title, info, location, startDate, endDate, duration }) => {
   const db = getDb();
   const result = await run(
@@ -593,12 +586,10 @@ module.exports = {
   getStaffBySection,
   verifyAdminCredentials,
   getNewsItems,
-  getNewsItemById,
   createNewsItem,
   updateNewsItem,
   deleteNewsItem,
   getEventItems,
-  getEventItemById,
   createEventItem,
   updateEventItem,
   deleteEventItem

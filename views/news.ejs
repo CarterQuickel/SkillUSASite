@@ -1,7 +1,35 @@
+<<<<<<< HEAD
 <!-- NEWS SECTION -->
 <section class="news-section">
   <div class="news-header">
     <h1>SkillsUSA News</h1>
+=======
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>News & Updates | SkillsUSA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spectral:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/news.css" />
+  </head>
+  <body>
+    <%- include('header') %>
+    <main>
+      <section class="hero hero-news">
+        <div class="hero-media" role="img" aria-label="SkillsUSA News"></div>
+        <div class="hero-content">
+          <h1>News and Updates</h1>
+          <p class="hero-subtitle">Stay informed about SkillsUSA events and achievements</p>
+        </div>
+      </section>
+>>>>>>> parent of 4d5fa78 (ok)
 
     <% if (isAdmin) { %>
       <button id="openNewsModalBtn" class="admin-btn">
@@ -164,6 +192,7 @@
       <div class="form-group">
         <label for="adminNewsDate">Date</label>
 
+<<<<<<< HEAD
         <input
           type="date"
           id="adminNewsDate"
@@ -209,3 +238,69 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/news.js"></script>
+=======
+                <div class="admin-modal-actions">
+                  <button class="admin-modal-save" type="submit">Save</button>
+                  <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
+                </div>
+              </form>
+              <div class="admin-modal-preview">
+                <p class="admin-preview-label">Preview</p>
+                <div class="admin-preview-card" id="adminPreviewCard"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <template id="eventCardTemplate">
+          <div class="event-card" data-item-type="event" data-id="" data-start-date="" data-end-date="" data-duration="" data-is-new="true">
+            <div class="news-admin-actions">
+              <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+              </button>
+              <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="event-date">
+              <div class="event-month">May</div>
+              <div class="event-day">1</div>
+            </div>
+            <div class="event-content">
+              <h3>New event</h3>
+              <p class="event-location event-location-text"></p>
+              <p class="event-info"></p>
+              <a href="#" class="event-link">Learn More →</a>
+            </div>
+          </div>
+        </template>
+        <template id="newsCardTemplate">
+          <article class="news-article" data-item-type="news" data-id="" data-news-date="" data-category="Announcements" data-is-new="true">
+            <div class="news-admin-actions">
+              <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+              </button>
+              <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="article-image">
+              <img src="/icons/placeholder.png" alt="News image" />
+            </div>
+            <div class="article-content">
+              <div class="article-meta">
+                <span class="article-date news-date">May 7, 2026</span>
+                <span class="article-category">Announcements</span>
+              </div>
+              <h3>New update</h3>
+              <p class="news-info">Add news details here.</p>
+              <a href="#" class="read-more">Read More →</a>
+            </div>
+          </article>
+        </template>
+      <% } %>
+    <%- include('footer') %>
+    <script src="/js/main.js"></script>
+    <script src="/js/news.js"></script>
+  </body>
+</html>
+>>>>>>> parent of 4d5fa78 (ok)

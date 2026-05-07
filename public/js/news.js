@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     editForm.querySelector(".admin-modal-save");
 
   const maxImageSize = 50 * 1024 * 1024;
+<<<<<<< HEAD
 
   const allowedTypes = [
     "image/png",
@@ -58,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const isAdmin =
     document.body?.dataset?.isAdmin === "true";
+=======
+  const allowedTypes = ["image/png", "image/jpeg"];
+>>>>>>> parent of 4d5fa78 (ok)
 
   let activeCard = null;
   let activeImageUrl = "";
@@ -111,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+<<<<<<< HEAD
   const buildAdminActions = (type) => {
     if (!isAdmin) {
       return null;
@@ -362,6 +367,65 @@ document.addEventListener("DOMContentLoaded", () => {
     const response =
       await fetch(url, options);
 
+=======
+  const getIsoDate = (date) => {
+    if (!date || Number.isNaN(date.getTime())) {
+      return "";
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const parseNewsDateValue = (text) => {
+    if (!text) {
+      return "";
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+      return text;
+    }
+    const parsed = new Date(text);
+    return getIsoDate(parsed);
+  };
+
+  const parseEventDatesFromCard = (card) => {
+    const startValue = card.dataset.startDate || "";
+    const endValue = card.dataset.endDate || "";
+    if (startValue) {
+      return {
+        start: new Date(startValue),
+        end: endValue ? new Date(endValue) : null
+      };
+    }
+    const monthText = card.querySelector(".event-month")?.textContent.trim() || "";
+    const year = new Date().getFullYear();
+    const dayText = card.querySelector(".event-day")?.textContent.trim() || "";
+    const rangeText = card.querySelector(".date-display")?.textContent.trim() || "";
+
+    if (dayText) {
+      const start = new Date(`${monthText} ${dayText}, ${year}`);
+      return { start, end: null };
+    }
+
+    if (rangeText.includes("-")) {
+      const parts = rangeText.split("-").map((part) => part.trim());
+      const startDay = parts[0];
+      const endPart = parts[1] || "";
+      const endPieces = endPart.split(" ").filter(Boolean);
+      const endMonth = endPieces.length > 1 ? endPieces[0] : monthText;
+      const endDay = endPieces.length > 1 ? endPieces[1] : endPieces[0];
+      const start = new Date(`${monthText} ${startDay}, ${year}`);
+      const end = new Date(`${endMonth} ${endDay}, ${year}`);
+      return { start, end };
+    }
+
+    return { start: null, end: null };
+  };
+
+  const requestJson = async (url, options) => {
+    const response = await fetch(url, options);
+>>>>>>> parent of 4d5fa78 (ok)
     if (!response.ok) {
       const payload =
         await response
@@ -747,6 +811,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
 
+<<<<<<< HEAD
   socket.on(
     "news:updated",
     (payload) => {
@@ -887,3 +952,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   );
 });
+=======
+    closeModal();
+  });
+
+  sortNewsByDate();
+  sortEventsByDate();
+});
+>>>>>>> parent of 4d5fa78 (ok)
