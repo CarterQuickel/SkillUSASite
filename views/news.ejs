@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-<!-- NEWS SECTION -->
-<section class="news-section">
-  <div class="news-header">
-    <h1>SkillsUSA News</h1>
-=======
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -29,216 +23,209 @@
           <p class="hero-subtitle">Stay informed about SkillsUSA events and achievements</p>
         </div>
       </section>
->>>>>>> parent of 4d5fa78 (ok)
 
-    <% if (isAdmin) { %>
-      <button id="openNewsModalBtn" class="admin-btn">
-        Add News
-      </button>
-    <% } %>
-  </div>
-
-  <!-- Featured News -->
-  <% const featured = newsItems.find(item => item.is_featured); %>
-
-  <% if (featured) { %>
-    <div class="featured-news" id="featured-news-<%= featured.id %>">
-      <img
-        src="<%= featured.image_url %>"
-        alt="<%= featured.title %>"
-        class="featured-image"
-      />
-
-      <div class="featured-content">
-        <span class="news-category"><%= featured.category %></span>
-
-        <h2><%= featured.title %></h2>
-
-        <p><%= featured.info %></p>
-
-        <div class="news-meta">
-          <span><%= featured.date %></span>
-
-          <% if (isAdmin) { %>
-            <div class="admin-controls">
-              <button
-                class="edit-news-btn"
-                data-id="<%= featured.id %>"
-                data-title="<%= featured.title %>"
-                data-info="<%= featured.info %>"
-                data-image="<%= featured.image_url %>"
-                data-date="<%= featured.date %>"
-                data-category="<%= featured.category %>"
-                data-featured="<%= featured.is_featured %>"
-              >
-                Edit
-              </button>
-
-              <button
-                class="delete-news-btn"
-                data-id="<%= featured.id %>"
-              >
-                Delete
-              </button>
-            </div>
-          <% } %>
-        </div>
-      </div>
-    </div>
-  <% } %>
-
-  <!-- News Grid -->
-  <div class="news-grid" id="newsGrid">
-    <% newsItems.filter(item => !item.is_featured).forEach(item => { %>
-      <div class="news-card" id="news-<%= item.id %>">
-
-        <img
-          src="<%= item.image_url %>"
-          alt="<%= item.title %>"
-          class="news-image"
-        />
-
-        <div class="news-content">
-
-          <span class="news-category">
-            <%= item.category %>
-          </span>
-
-          <h3><%= item.title %></h3>
-
-          <p><%= item.info %></p>
-
-          <div class="news-meta">
-            <span><%= item.date %></span>
-
-            <% if (isAdmin) { %>
-              <div class="admin-controls">
-
-                <button
-                  class="edit-news-btn"
-                  data-id="<%= item.id %>"
-                  data-title="<%= item.title %>"
-                  data-info="<%= item.info %>"
-                  data-image="<%= item.image_url %>"
-                  data-date="<%= item.date %>"
-                  data-category="<%= item.category %>"
-                  data-featured="<%= item.is_featured %>"
-                >
-                  Edit
-                </button>
-
-                <button
-                  class="delete-news-btn"
-                  data-id="<%= item.id %>"
-                >
-                  Delete
-                </button>
-
+            <section class="upcoming-events">
+              <div class="events-header">
+                <div class="section-title-row">
+                  <h2>Upcoming Calendar Events</h2>
+                  <% if (isAdmin) { %>
+                    <button class="admin-icon-button admin-add-button" type="button" title="Add event" aria-label="Add event" data-add-type="event">
+                      <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+                    </button>
+                  <% } %>
+                </div>
+                <p>Mark your calendars for these important SkillsUSA dates and events.</p>
               </div>
+
+        <div class="events-grid">
+          <% eventItems.forEach((eventItem) => { %>
+            <div class="event-card" data-item-type="event" data-id="<%= eventItem.id %>" data-start-date="<%= eventItem.startDate %>" data-end-date="<%= eventItem.endDate || '' %>" data-duration="<%= eventItem.duration || '' %>">
+              <% if (isAdmin) { %>
+                <div class="news-admin-actions">
+                  <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
+                    <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                  </button>
+                  <button class="admin-icon-button admin-edit-button" type="button" title="Edit event" aria-label="Edit event">
+                    <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                  </button>
+                </div>
+              <% } %>
+              <div class="event-date<%= eventItem.isMultiDay ? ' multi-day' : '' %>">
+                <% if (eventItem.isMultiDay) { %>
+                  <div class="date-range">
+                    <div class="event-month"><%= eventItem.displayMonth %></div>
+                    <div class="date-display"><%= eventItem.displayRange %></div>
+                  </div>
+                <% } else { %>
+                  <div class="event-month"><%= eventItem.displayMonth %></div>
+                  <div class="event-day"><%= eventItem.displayDay %></div>
+                <% } %>
+              </div>
+              <div class="event-content">
+                <h3><%= eventItem.title %></h3>
+                <% if (eventItem.duration) { %>
+                  <p class="event-duration">⏱️ <%= eventItem.duration %></p>
+                <% } %>
+                <p class="event-location event-location-text"><%= eventItem.location ? `📍 ${eventItem.location}` : '' %></p>
+                <p class="event-info"><%= eventItem.info %></p>
+                <a href="#" class="event-link">Learn More →</a>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+
+      <section class="news-container">
+        <div class="news-header">
+          <div class="section-title-row">
+            <h2>Latest News</h2>
+            <% if (isAdmin) { %>
+              <button class="admin-icon-button admin-add-button" type="button" title="Add news" aria-label="Add news" data-add-type="news">
+                <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+              </button>
             <% } %>
           </div>
-
+          <p>Follow our latest announcements, competition results, and student achievements.</p>
         </div>
-      </div>
-    <% }) %>
-  </div>
-</section>
 
-<!-- ADMIN NEWS MODAL -->
-<% if (isAdmin) { %>
+        <div class="news-grid">
+          <% featuredNews.forEach((newsItem) => { %>
+            <article class="news-article featured" data-item-type="news" data-id="<%= newsItem.id %>" data-news-date="<%= newsItem.date %>" data-category="<%= newsItem.category %>">
+              <% if (isAdmin) { %>
+                <div class="news-admin-actions">
+                  <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                    <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                  </button>
+                  <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                    <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                  </button>
+                </div>
+              <% } %>
+              <div class="article-image featured-image">
+                <img src="<%= newsItem.image_url || '/icons/placeholder.png' %>" alt="Featured article" />
+              </div>
+              <div class="article-content">
+                <div class="article-meta">
+                  <span class="article-date news-date"><%= newsItem.displayDate %></span>
+                  <span class="article-category featured-category"><%= newsItem.category %></span>
+                </div>
+                <h3><%= newsItem.title %></h3>
+                <p class="news-info"><%= newsItem.info %></p>
+                <a href="#" class="read-more">Read Full Story →</a>
+              </div>
+            </article>
+          <% }) %>
 
-<div id="newsModal" class="modal">
+          <% regularNews.forEach((newsItem) => { %>
+            <article class="news-article" data-item-type="news" data-id="<%= newsItem.id %>" data-news-date="<%= newsItem.date %>" data-category="<%= newsItem.category %>">
+              <% if (isAdmin) { %>
+                <div class="news-admin-actions">
+                  <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
+                    <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                  </button>
+                  <button class="admin-icon-button admin-edit-button" type="button" title="Edit news" aria-label="Edit news">
+                    <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                  </button>
+                </div>
+              <% } %>
+              <div class="article-image">
+                <img src="<%= newsItem.image_url || '/icons/placeholder.png' %>" alt="News item" />
+              </div>
+              <div class="article-content">
+                <div class="article-meta">
+                  <span class="article-date news-date"><%= newsItem.displayDate %></span>
+                  <span class="article-category"><%= newsItem.category %></span>
+                </div>
+                <h3><%= newsItem.title %></h3>
+                <p class="news-info"><%= newsItem.info %></p>
+                <a href="#" class="read-more">Read More →</a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
 
-  <div class="modal-content">
+        <!-- Pagination -->
+        <div class="pagination">
+          <a href="#" class="page-link active">1</a>
+          <a href="#" class="page-link">2</a>
+          <a href="#" class="page-link">3</a>
+          <a href="#" class="page-link">Next →</a>
+        </div>
+      </section>
 
-    <span class="close-modal">&times;</span>
+      <section class="news-sidebar">
+        <div class="sidebar-widget">
+          <h3>Categories</h3>
+          <ul class="category-list">
+            <li><a href="#">Competition Results</a></li>
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Student Spotlight</a></li>
+            <li><a href="#">Announcements</a></li>
+            <li><a href="#">Achievements</a></li>
+          </ul>
+        </div>
 
-    <h2 id="newsModalTitle">Add News</h2>
+        <div class="sidebar-widget">
+          <h3>Subscribe to Updates</h3>
+          <p>Get the latest SkillsUSA news delivered to your inbox.</p>
+          <form class="subscribe-form">
+            <input type="email" placeholder="Your email" required>
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
 
-    <form id="newsForm">
+        <div class="sidebar-widget">
+          <h3>Quick Links</h3>
+          <ul class="quick-links">
+            <li><a href="/competitions">Competitions</a></li>
+            <li><a href="/staff">Meet the Team</a></li>
+            <li><a href="/donate">Support SkillsUSA</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+      </section>
+      <% if (isAdmin) { %>
+        <div class="admin-modal" id="adminEditModal" aria-hidden="true">
+          <div class="admin-modal-backdrop" data-admin-close></div>
+          <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+            <div class="admin-modal-header">
+              <h3 id="adminModalTitle">Edit item</h3>
+              <button class="admin-modal-close" type="button" data-admin-close aria-label="Close">Close</button>
+            </div>
+            <div class="admin-modal-body">
+              <form class="admin-modal-form" id="adminEditForm">
+                <div class="admin-modal-section" data-admin-section="news">
+                  <label for="adminNewsImageFile">Image upload</label>
+                  <input id="adminNewsImageFile" name="adminNewsImageFile" type="file" accept=".png,.jpg,.jpeg" />
+                  <p class="admin-modal-hint">PNG or JPG up to 50 MB.</p>
 
-      <input type="hidden" id="newsId" />
+                  <label for="adminNewsDate">Date</label>
+                  <input id="adminNewsDate" name="adminNewsDate" type="date" required />
 
-      <div class="form-group">
-        <label for="adminNewsTitle">Title</label>
+                  <label for="adminNewsTitle">Title</label>
+                  <input id="adminNewsTitle" name="adminNewsTitle" type="text" />
 
-        <input
-          type="text"
-          id="adminNewsTitle"
-          required
-        />
-      </div>
+                  <label for="adminNewsInfo">Info</label>
+                  <textarea id="adminNewsInfo" name="adminNewsInfo" rows="5"></textarea>
+                </div>
 
-      <div class="form-group">
-        <label for="adminNewsInfo">Info</label>
+                <div class="admin-modal-section" data-admin-section="event">
+                  <label for="adminEventTitle">Event name</label>
+                  <input id="adminEventTitle" name="adminEventTitle" type="text" />
 
-        <textarea
-          id="adminNewsInfo"
-          rows="6"
-          required
-        ></textarea>
-      </div>
+                  <label for="adminEventStartDate">Start date</label>
+                  <input id="adminEventStartDate" name="adminEventStartDate" type="date" required />
 
-      <div class="form-group">
-        <label for="adminNewsImage">Image URL</label>
+                  <label for="adminEventEndDate">End date (optional)</label>
+                  <input id="adminEventEndDate" name="adminEventEndDate" type="date" />
 
-        <input
-          type="text"
-          id="adminNewsImage"
-        />
-      </div>
+                  <label for="adminEventLocation">Location</label>
+                  <input id="adminEventLocation" name="adminEventLocation" type="text" />
 
-      <!-- FIXED -->
-      <div class="form-group">
-        <label for="adminNewsDate">Date</label>
+                  <label for="adminEventInfo">Info</label>
+                  <textarea id="adminEventInfo" name="adminEventInfo" rows="5"></textarea>
+                </div>
 
-<<<<<<< HEAD
-        <input
-          type="date"
-          id="adminNewsDate"
-          name="adminNewsDate"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="adminNewsCategory">Category</label>
-
-        <input
-          type="text"
-          id="adminNewsCategory"
-          required
-        />
-      </div>
-
-      <div class="form-group checkbox-group">
-
-        <input
-          type="checkbox"
-          id="adminNewsFeatured"
-        />
-
-        <label for="adminNewsFeatured">
-          Featured News
-        </label>
-
-      </div>
-
-      <button type="submit" class="save-btn">
-        Save News
-      </button>
-
-    </form>
-
-  </div>
-
-</div>
-
-<% } %>
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/news.js"></script>
-=======
                 <div class="admin-modal-actions">
                   <button class="admin-modal-save" type="submit">Save</button>
                   <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
@@ -303,4 +290,3 @@
     <script src="/js/news.js"></script>
   </body>
 </html>
->>>>>>> parent of 4d5fa78 (ok)
