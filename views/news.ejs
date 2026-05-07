@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/news.css" />
   </head>
-  <body>
+  <body data-is-admin="<%= isAdmin ? 'true' : 'false' %>">
     <%- include('header') %>
     <main>
       <section class="hero hero-news">
@@ -287,6 +287,7 @@
       <% } %>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/js/news.js"></script>
   </body>
 </html>

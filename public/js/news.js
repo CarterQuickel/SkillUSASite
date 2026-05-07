@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const maxImageSize = 50 * 1024 * 1024;
   const allowedTypes = ["image/png", "image/jpeg"];
+  const isAdmin = document.body?.dataset?.isAdmin === "true";
 
   let activeCard = null;
   let activeImageUrl = "";
@@ -110,6 +111,151 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     return { start: null, end: null };
+  };
+
+  const buildAdminActions = (type) => {
+    if (!isAdmin) {
+      return null;
+    }
+    const actions = document.createElement("div");
+    actions.className = "news-admin-actions";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "admin-icon-button admin-delete-button";
+    deleteButton.type = "button";
+    deleteButton.title = type === "news" ? "Delete news" : "Delete event";
+    deleteButton.setAttribute("aria-label", deleteButton.title);
+    deleteButton.innerHTML = '<img src="/icons/trash.svg" alt="" aria-hidden="true" />';
+
+    const editButton = document.createElement("button");
+    editButton.className = "admin-icon-button admin-edit-button";
+    editButton.type = "button";
+    editButton.title = type === "news" ? "Edit news" : "Edit event";
+    editButton.setAttribute("aria-label", editButton.title);
+    editButton.innerHTML = '<img src="/icons/pen.svg" alt="" aria-hidden="true" />';
+
+    actions.appendChild(deleteButton);
+    actions.appendChild(editButton);
+    return actions;
+  };
+
+  const buildNewsCard = (item) => {
+    const article = document.createElement("article");
+    article.className = item.isFeatured ? "news-article featured" : "news-article";
+    article.dataset.itemType = "news";
+    article.dataset.id = item.id;
+    article.dataset.newsDate = item.date;
+    article.dataset.category = item.category || "Announcements";
+    article.dataset.isNew = "false";
+
+    const adminActions = buildAdminActions("news");
+    if (adminActions) {
+      article.appendChild(adminActions);
+    }
+
+    const imageWrap = document.createElement("div");
+    imageWrap.className = item.isFeatured ? "article-image featured-image" : "article-image";
+    const img = document.createElement("img");
+    img.src = item.imageUrl || "/icons/placeholder.png";
+    img.alt = item.isFeatured ? "Featured article" : "News item";
+    imageWrap.appendChild(img);
+
+    const content = document.createElement("div");
+    content.className = "article-content";
+
+    const meta = document.createElement("div");
+    meta.className = "article-meta";
+    const date = document.createElement("span");
+    date.className = "article-date news-date";
+    date.textContent = formatDisplayDate(item.date);
+    const category = document.createElement("span");
+    category.className = item.isFeatured ? "article-category featured-category" : "article-category";
+    category.textContent = item.category || "Announcements";
+    meta.appendChild(date);
+    meta.appendChild(category);
+
+    const title = document.createElement("h3");
+    title.textContent = item.title || "";
+    const info = document.createElement("p");
+    info.className = "news-info";
+    info.textContent = item.info || "";
+    const link = document.createElement("a");
+    link.className = "read-more";
+    link.href = "#";
+    link.textContent = item.isFeatured ? "Read Full Story →" : "Read More →";
+
+    content.appendChild(meta);
+    content.appendChild(title);
+    content.appendChild(info);
+    content.appendChild(link);
+
+    article.appendChild(imageWrap);
+    article.appendChild(content);
+    return article;
+  };
+
+  const buildEventCard = (item) => {
+    const card = document.createElement("div");
+    card.className = "event-card";
+    card.dataset.itemType = "event";
+    card.dataset.id = item.id;
+    card.dataset.startDate = item.startDate || "";
+    card.dataset.endDate = item.endDate || "";
+    card.dataset.duration = item.duration || "";
+    card.dataset.isNew = "false";
+
+    const adminActions = buildAdminActions("event");
+    if (adminActions) {
+      card.appendChild(adminActions);
+    }
+
+    const dateBlock = document.createElement("div");
+    dateBlock.className = "event-date";
+    card.appendChild(dateBlock);
+
+    const content = document.createElement("div");
+    content.className = "event-content";
+    const title = document.createElement("h3");
+    title.textContent = item.title || "";
+    content.appendChild(title);
+
+    if (item.duration) {
+      const duration = document.createElement("p");
+      duration.className = "event-duration";
+      duration.textContent = `⏱️ ${item.duration}`;
+      content.appendChild(duration);
+    }
+
+    const location = document.createElement("p");
+    location.className = "event-location event-location-text";
+    location.textContent = item.location ? `📍 ${item.location}` : "";
+    content.appendChild(location);
+
+    const info = document.createElement("p");
+    info.className = "event-info";
+    info.textContent = item.info || "";
+    content.appendChild(info);
+
+    const link = document.createElement("a");
+    link.className = "event-link";
+    link.href = "#";
+    link.textContent = "Learn More →";
+    content.appendChild(link);
+
+    card.appendChild(content);
+    updateEventDateDisplay(card, item.startDate || "", item.endDate || "");
+    return card;
+  };
+
+  const animateCard = (card, type) => {
+    if (!card) {
+      return;
+    }
+    const className = type === "enter" ? "live-enter" : "live-update";
+    card.classList.add(className);
+    window.setTimeout(() => {
+      card.classList.remove(className);
+    }, type === "enter" ? 500 : 650);
   };
 
   const requestJson = async (url, options) => {
@@ -570,4 +716,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sortNewsByDate();
   sortEventsByDate();
+
+  if (window.io) {
+    const socket = window.io();
+    socket.on("news:updated", (payload) => {
+      if (!payload || !payload.action) {
+        return;
+      }
+      const container = document.querySelector(".news-grid");
+      if (!container) {
+        return;
+      }
+      if (payload.action === "delete") {
+        const existing = container.querySelector(`[data-item-type="news"][data-id="${payload.id}"]`);
+        if (existing) {
+          existing.remove();
+          sortNewsByDate();
+        }
+        return;
+      }
+
+      if (payload.action === "upsert" && payload.item) {
+        const existing = container.querySelector(`[data-item-type="news"][data-id="${payload.item.id}"]`);
+        const card = buildNewsCard(payload.item);
+        if (existing) {
+          existing.replaceWith(card);
+          animateCard(card, "update");
+        } else {
+          container.appendChild(card);
+          animateCard(card, "enter");
+        }
+        sortNewsByDate();
+      }
+    });
+
+    socket.on("events:updated", (payload) => {
+      if (!payload || !payload.action) {
+        return;
+      }
+      const container = document.querySelector(".events-grid");
+      if (!container) {
+        return;
+      }
+      if (payload.action === "delete") {
+        const existing = container.querySelector(`[data-item-type="event"][data-id="${payload.id}"]`);
+        if (existing) {
+          existing.remove();
+          sortEventsByDate();
+        }
+        return;
+      }
+
+      if (payload.action === "upsert" && payload.item) {
+        const existing = container.querySelector(`[data-item-type="event"][data-id="${payload.item.id}"]`);
+        const card = buildEventCard(payload.item);
+        if (existing) {
+          existing.replaceWith(card);
+          animateCard(card, "update");
+        } else {
+          container.appendChild(card);
+          animateCard(card, "enter");
+        }
+        sortEventsByDate();
+      }
+    });
+  }
 });

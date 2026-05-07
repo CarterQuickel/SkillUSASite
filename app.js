@@ -1,23 +1,29 @@
 const path = require("path");
 const fs = require("fs");
 const express = require("express");
+const http = require("http");
 const session = require("express-session");
 const multer = require("multer");
+const { Server } = require("socket.io");
 const {
 	initializeDatabase,
 	getStaffBySection,
 	verifyAdminCredentials,
 	getNewsItems,
+	getNewsItemById,
 	createNewsItem,
 	updateNewsItem,
 	deleteNewsItem,
 	getEventItems,
+	getEventItemById,
 	createEventItem,
 	updateEventItem,
 	deleteEventItem
 } = require("./db");
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
 const PUBLIC_HOST = process.env.PUBLIC_HOST || "172.16.3.200";
@@ -288,7 +294,22 @@ app.post("/api/news", async (req, res) => {
 			category,
 			isFeatured: false
 		});
-		res.status(201).json({ id });
+		const item = await getNewsItemById(id);
+		io.emit("news:updated", {
+			action: "upsert",
+			item: item
+				? {
+					id: item.id,
+					title: item.title,
+					info: item.info,
+					imageUrl: item.image_url,
+					date: item.date,
+					category: item.category,
+					isFeatured: Boolean(item.is_featured)
+				}
+				: null
+		});
+		res.status(201).json({ id, item });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to create news." });
 	}
@@ -310,7 +331,22 @@ app.put("/api/news/:id", async (req, res) => {
 			return;
 		}
 		await updateNewsItem(id, { title, info, imageUrl, date, category });
-		res.json({ ok: true });
+		const item = await getNewsItemById(id);
+		io.emit("news:updated", {
+			action: "upsert",
+			item: item
+				? {
+					id: item.id,
+					title: item.title,
+					info: item.info,
+					imageUrl: item.image_url,
+					date: item.date,
+					category: item.category,
+					isFeatured: Boolean(item.is_featured)
+				}
+				: null
+		});
+		res.json({ ok: true, item });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update news." });
 	}
@@ -327,6 +363,7 @@ app.delete("/api/news/:id", async (req, res) => {
 			return;
 		}
 		await deleteNewsItem(id);
+		io.emit("news:updated", { action: "delete", id });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete news." });
@@ -356,7 +393,22 @@ app.post("/api/events", async (req, res) => {
 			endDate,
 			duration
 		});
-		res.status(201).json({ id });
+		const item = await getEventItemById(id);
+		io.emit("events:updated", {
+			action: "upsert",
+			item: item
+				? {
+					id: item.id,
+					title: item.title,
+					info: item.info,
+					location: item.location,
+					startDate: item.start_date,
+					endDate: item.end_date,
+					duration: item.duration
+				}
+				: null
+		});
+		res.status(201).json({ id, item });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to create event." });
 	}
@@ -379,7 +431,22 @@ app.put("/api/events/:id", async (req, res) => {
 			return;
 		}
 		await updateEventItem(id, { title, info, location, startDate, endDate, duration });
-		res.json({ ok: true });
+		const item = await getEventItemById(id);
+		io.emit("events:updated", {
+			action: "upsert",
+			item: item
+				? {
+					id: item.id,
+					title: item.title,
+					info: item.info,
+					location: item.location,
+					startDate: item.start_date,
+					endDate: item.end_date,
+					duration: item.duration
+				}
+				: null
+		});
+		res.json({ ok: true, item });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update event." });
 	}
@@ -396,6 +463,7 @@ app.delete("/api/events/:id", async (req, res) => {
 			return;
 		}
 		await deleteEventItem(id);
+		io.emit("events:updated", { action: "delete", id });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete event." });
@@ -408,7 +476,7 @@ app.get("/photos", (req, res) => {
 
 const startServer = async () => {
 	await initializeDatabase();
-	app.listen(PORT, HOST, () => {
+	server.listen(PORT, HOST, () => {
 		const publicUrl = `http://${PUBLIC_HOST}:${PORT}`;
 		console.log(`Server running at ${publicUrl}`);
 	});
