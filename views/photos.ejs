@@ -12,6 +12,7 @@
     />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/photos.css" />
+    <link rel="stylesheet" href="/css/album.css">
   </head>
   <body>
     <%- include('header') %>
@@ -31,124 +32,40 @@
           events, and student achievements. Click on any album to view all photos.
         </p>
       </section>
-
-      <!-- Photo Albums Grid -->
-      <section class="albums-container">
-        <div class="albums-grid">
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #c9a24c 0%, #b38c3f 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#127945;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>State Championship</h3>
-                <p class="photo-count">18 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>State Championship 2025</h3>
-              <p>Highlights from our state-level competition featuring top technical skills.</p>
-              <p class="date-posted">July 2025</p>
-            </div>
-          </div>
-
-          <!-- Album 2: Regional Qualifiers -->
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #0a2147 0%, #05162f 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#127953;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>Regional Qualifiers</h3>
-                <p class="photo-count">24 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>Regional Qualifiers 2025</h3>
-              <p>Action shots from our regional competition rounds across multiple venues.</p>
-              <p class="date-posted">June 2025</p>
-            </div>
-          </div>
-
-          <!-- Album 3: Leadership Conference -->
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #12457a 0%, #1c61d0 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#127904;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>Leadership Conference</h3>
-                <p class="photo-count">31 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>Leadership Training 2025</h3>
-              <p>Candid moments from our 3-day leadership development intensive workshop.</p>
-              <p class="date-posted">May 2025</p>
-            </div>
-          </div>
-
-          <!-- Album 4: Team Activities -->
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #b1292b 0%, #8e1f1f 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#128187;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>Team Activities</h3>
-                <p class="photo-count">20 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>Team Building Activities</h3>
-              <p>Photos from team bonding sessions, workshops, and collaborative events.</p>
-              <p class="date-posted">April 2025</p>
-            </div>
-          </div>
-
-          <!-- Album 5: Student Achievements -->
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #2d5f2e 0%, #1a381a 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#127891;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>Student Achievements</h3>
-                <p class="photo-count">27 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>Award Winners & Achievements</h3>
-              <p>Celebration photos of our award-winning students and their accomplishments.</p>
-              <p class="date-posted">March 2025</p>
-            </div>
-          </div>
-
-          <!-- Album 6: Community Outreach -->
-          <div class="album-card">
-            <div class="album-image" style="background: linear-gradient(135deg, #5c4033 0%, #3e2723 100%); position: relative; overflow: hidden;">
-              <div class="album-placeholder">
-                <span style="font-size: 3rem;">&#127881;</span>
-              </div>
-              <div class="album-overlay">
-                <h3>Community Events</h3>
-                <p class="photo-count">15 Photos</p>
-                <a href="#" class="view-album">View Album →</a>
-              </div>
-            </div>
-            <div class="album-info">
-              <h3>Community Outreach 2025</h3>
-              <p>SkillsUSA members volunteering and engaging with the local community.</p>
-              <p class="date-posted">February 2025</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- import the album.tsx file below -->
+      <div id="albums-grid">
+        <div
+          class="album"
+          data-title="Dec. 11, 2025 - Student Council & SkillsUSA Free Hunger York Event"
+          data-description="The students of SkillsUSA York County School of Technology participated in the Free Hunger York event, a community initiative to combat food insecurity. Through their efforts, they helped collect and distribute food to those in need, making a positive impact on the local community."
+          data-folder="freeHungerYork"
+        ></div>
+        <div
+          class="album"
+          data-title="Nov. 7, 2024 - SkillsUSA PA State Leadership and Skills Conference"
+          data-description="On November 7, 2024, SkillsUSA PA State Leadership and Skills Conference took place, showcasing the talents and dedication of students from across Pennsylvania. The event featured a variety of competitions, workshops, and networking opportunities, fostering leadership development and skill-building among participants."
+          data-folder="1172024"
+        ></div>
+        <div
+          class="album"
+          data-title="April 2-4, 2025 - SkillsUSA National Leadership and Skills Conference"
+          data-description="The SkillsUSA National Leadership and Skills Conference is an annual event that brings together students from across the nation to compete in various technical and leadership competitions. This year's conference featured a wide range of activities designed to foster growth and development among participants."
+          data-folder="422025"
+        ></div>
+        <div
+          class="album"
+          data-title="Dec. 17, 2024 - FFA and SkillsUSA"
+          data-description="Students from FFA and SkillsUSA came together for a community service field trip to New Bridgeville to prune trees and help with landscaping. This collaborative effort showcased the dedication of both organizations to giving back to the community and fostering teamwork among students."
+          data-folder="12172024"
+        ></div>
+        <div
+          class="album"
+          data-title="Jan. 28, 2025 - SkillsUSA"
+          data-description="SkillsUSA members participated in an organizational meeting and awards ceremony."
+          data-folder="1282025"
+        ></div>
+      </div>
+      <script src="/album.js"></script>
     </main>
     <%- include('footer') %>
     <script src="/js/main.js"></script>

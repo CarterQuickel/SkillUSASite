@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,22 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "SkillsUSARealImages")));
+
+app.get("/api/images", (req, res) => {
+  const folder = req.query.folder;
+
+  const dirPath = path.join(__dirname, "public", folder);
+
+  fs.readdir(dirPath, (err, files) => {
+    if (err) return res.json([]);
+
+    const images = files
+      .filter(f => f.endsWith(".jpg") || f.endsWith(".png"))
+      .map(f => `/${folder}/${f}`);
+
+    res.json(images);
+  });
+});
 
 app.get("/", (req, res) => {
 	res.render("index");

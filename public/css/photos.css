@@ -45,25 +45,6 @@
   margin: 0 auto;
 }
 
-.albums-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2.5rem;
-}
-
-.album-card {
-  background: var(--white);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.album-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(5, 22, 47, 0.15);
-}
-
 .album-image {
   position: relative;
   height: 250px;
