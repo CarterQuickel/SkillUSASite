@@ -182,6 +182,142 @@ const seedStaffIfMissing = async (db) => {
   }
 };
 
+const seedNewsIfMissing = async (db) => {
+  const row = await get(db, "SELECT COUNT(*) AS count FROM news_items");
+  if (row.count > 0) {
+    return;
+  }
+
+  const seedNews = [
+    {
+      title: "State Championship Winners Announced",
+      info: "Our SkillsUSA team brought home multiple medals from the state championships this year. Read about the amazing performances and achievements of our talented students who competed against the best in the state.",
+      imageUrl: "https://via.placeholder.com/600x400?text=Featured+Story",
+      date: "2026-05-05",
+      category: "Competition Results",
+      isFeatured: 1
+    },
+    {
+      title: "Spring Training Workshop Scheduled",
+      info: "Join us for an intensive training workshop to prepare for upcoming competitions. Industry experts will lead sessions in various technical skills.",
+      imageUrl: "https://via.placeholder.com/400x300?text=Article+2",
+      date: "2026-04-28",
+      category: "Events",
+      isFeatured: 0
+    },
+    {
+      title: "Student Profile: Rising Star in Carpentry",
+      info: "Meet this month's featured student and learn about their journey with SkillsUSA and how the program has shaped their career path and professional goals.",
+      imageUrl: "https://via.placeholder.com/400x300?text=Article+3",
+      date: "2026-04-20",
+      category: "Student Spotlight",
+      isFeatured: 0
+    },
+    {
+      title: "Registration Open for Summer Programs",
+      info: "Don't miss out! Registration is now open for our summer training programs. Spaces are limited, so register early to secure your spot in your preferred program.",
+      imageUrl: "https://via.placeholder.com/400x300?text=Article+4",
+      date: "2026-04-15",
+      category: "Announcements",
+      isFeatured: 0
+    },
+    {
+      title: "Local Competition Results In",
+      info: "Congratulations to all participants in the local competition! Check out who's advancing to the regional competition and see detailed results from each event category.",
+      imageUrl: "https://via.placeholder.com/400x300?text=Article+5",
+      date: "2026-04-08",
+      category: "Events",
+      isFeatured: 0
+    },
+    {
+      title: "Scholarship Opportunity for SkillsUSA Members",
+      info: "Several of our corporate sponsors are offering scholarships specifically for SkillsUSA members. Learn about eligibility requirements and how to apply for these valuable opportunities.",
+      imageUrl: "https://via.placeholder.com/400x300?text=Article+6",
+      date: "2026-04-01",
+      category: "Student Spotlight",
+      isFeatured: 0
+    }
+  ];
+
+  for (const item of seedNews) {
+    await run(
+      db,
+      `INSERT INTO news_items (title, info, image_url, date, category, is_featured)
+       VALUES (?, ?, ?, ?, ?, ?)`
+      ,
+      [item.title, item.info, item.imageUrl, item.date, item.category, item.isFeatured]
+    );
+  }
+};
+
+const seedEventsIfMissing = async (db) => {
+  const row = await get(db, "SELECT COUNT(*) AS count FROM event_items");
+  if (row.count > 0) {
+    return;
+  }
+
+  const seedEvents = [
+    {
+      title: "Regional Qualifier Round 1",
+      info: "First round of regional qualifiers. Students compete in various technical skills to advance to the next round.",
+      location: "York County School of Technology",
+      startDate: "2026-05-15",
+      endDate: null,
+      duration: null
+    },
+    {
+      title: "Leadership Training Intensive",
+      info: "Join our intensive 3-day leadership development workshop. Build communication and team-building skills essential for competition success. Includes meals and materials.",
+      location: "Conference Center",
+      startDate: "2026-05-22",
+      endDate: "2026-05-24",
+      duration: "3-Day Workshop"
+    },
+    {
+      title: "Regional Qualifier Finals",
+      info: "Final round of regional qualifications. Top performers will advance to the state championships.",
+      location: "York County School of Technology",
+      startDate: "2026-06-05",
+      endDate: null,
+      duration: null
+    },
+    {
+      title: "State Championship Preparation Boot Camp",
+      info: "Intensive 4-day preparation boot camp for students advancing to state championships. Learn from experienced judges, mentors, and industry professionals.",
+      location: "Main Campus",
+      startDate: "2026-06-18",
+      endDate: "2026-06-21",
+      duration: "4-Day Boot Camp"
+    },
+    {
+      title: "State Championship Competition",
+      info: "The pinnacle event! Our students compete against the best from across Pennsylvania for state titles and advancement to nationals. Multiple skill competitions, networking, and awards.",
+      location: "State Conference Center",
+      startDate: "2026-07-09",
+      endDate: "2026-07-12",
+      duration: "4-Day Event"
+    },
+    {
+      title: "Summer Skill Development Programs",
+      info: "Intensive month-long programs offering skill development in carpentry, culinary arts, information technology, health sciences, and more. Flexible scheduling available.",
+      location: "Various Locations",
+      startDate: "2026-08-01",
+      endDate: "2026-08-31",
+      duration: "Full Month Program"
+    }
+  ];
+
+  for (const item of seedEvents) {
+    await run(
+      db,
+      `INSERT INTO event_items (title, info, location, start_date, end_date, duration)
+       VALUES (?, ?, ?, ?, ?, ?)`
+      ,
+      [item.title, item.info, item.location, item.startDate, item.endDate, item.duration]
+    );
+  }
+};
+
 const initializeDatabase = async () => {
   const db = getDb();
 
@@ -209,9 +345,39 @@ const initializeDatabase = async () => {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`
   );
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS news_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      info TEXT NOT NULL,
+      image_url TEXT,
+      date TEXT NOT NULL,
+      category TEXT NOT NULL,
+      is_featured INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`
+  );
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS event_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      info TEXT NOT NULL,
+      location TEXT,
+      start_date TEXT NOT NULL,
+      end_date TEXT,
+      duration TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`
+  );
 
   await seedAdminIfMissing(db);
   await seedStaffIfMissing(db);
+  await seedNewsIfMissing(db);
+  await seedEventsIfMissing(db);
   await ensureAdminPassword(db);
 };
 
@@ -241,8 +407,94 @@ const verifyAdminCredentials = async (username, password) => {
   return verifyPassword(password, row.password_hash);
 };
 
+const getNewsItems = async () => {
+  const db = getDb();
+  return all(
+    db,
+    `SELECT id, title, info, image_url, date, category, is_featured
+     FROM news_items
+     ORDER BY is_featured DESC, date DESC, id DESC`
+  );
+};
+
+const createNewsItem = async ({ title, info, imageUrl, date, category, isFeatured }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO news_items (title, info, image_url, date, category, is_featured)
+     VALUES (?, ?, ?, ?, ?, ?)`
+    ,
+    [title, info, imageUrl, date, category, isFeatured ? 1 : 0]
+  );
+  return result.lastID;
+};
+
+const updateNewsItem = async (id, { title, info, imageUrl, date, category }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE news_items
+     SET title = ?, info = ?, image_url = ?, date = ?, category = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [title, info, imageUrl, date, category, id]
+  );
+};
+
+const deleteNewsItem = async (id) => {
+  const db = getDb();
+  await run(db, "DELETE FROM news_items WHERE id = ?", [id]);
+};
+
+const getEventItems = async () => {
+  const db = getDb();
+  return all(
+    db,
+    `SELECT id, title, info, location, start_date, end_date, duration
+     FROM event_items
+     ORDER BY start_date ASC, id ASC`
+  );
+};
+
+const createEventItem = async ({ title, info, location, startDate, endDate, duration }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO event_items (title, info, location, start_date, end_date, duration)
+     VALUES (?, ?, ?, ?, ?, ?)`
+    ,
+    [title, info, location, startDate, endDate, duration]
+  );
+  return result.lastID;
+};
+
+const updateEventItem = async (id, { title, info, location, startDate, endDate, duration }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE event_items
+     SET title = ?, info = ?, location = ?, start_date = ?, end_date = ?, duration = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [title, info, location, startDate, endDate, duration, id]
+  );
+};
+
+const deleteEventItem = async (id) => {
+  const db = getDb();
+  await run(db, "DELETE FROM event_items WHERE id = ?", [id]);
+};
+
 module.exports = {
   initializeDatabase,
   getStaffBySection,
-  verifyAdminCredentials
+  verifyAdminCredentials,
+  getNewsItems,
+  createNewsItem,
+  updateNewsItem,
+  deleteNewsItem,
+  getEventItems,
+  createEventItem,
+  updateEventItem,
+  deleteEventItem
 };
