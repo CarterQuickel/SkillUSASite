@@ -156,7 +156,6 @@
 .desc {
     overflow: hidden;
     transition: all 0.3s ease;
-    text-align: center;
     padding-bottom: 20px;
 }
 
@@ -164,7 +163,6 @@
     max-height: 120px;
     overflow: hidden;
     transition: all 0.3s ease;
-    text-align: center;
 }
 
 .desc.hidden::after {

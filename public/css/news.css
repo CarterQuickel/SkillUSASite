@@ -2,10 +2,8 @@
 
 .hero-news .hero-media {
   background: linear-gradient(rgba(5, 22, 47, 0.5), rgba(5, 22, 47, 0.35)),
-    url("/20250403_152033_54452148125_o.jpg")
-      center/cover no-repeat;
+    url("/albums/422025/20250403_152033_54452148125_o.jpg") center/cover no-repeat;
 }
-
 .news-container {
   padding: 4rem 1.5rem;
   background: #ffffff;
