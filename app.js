@@ -67,6 +67,8 @@ app.get("/api/images", (req, res) => {
 
     res.json(images);
   });
+});
+
 if (!fs.existsSync(uploadsDir)) {
 	fs.mkdirSync(uploadsDir, { recursive: true });
 }
