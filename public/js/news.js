@@ -369,6 +369,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (newCard) {
+        // mark as new and attach a temp id so we can reconcile client placeholder
+        const tempId = `tmp-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+        newCard.dataset.isNew = "true";
+        newCard.dataset.tempId = tempId;
         openModal(newCard);
       }
       return;
@@ -429,10 +433,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // prevent accidental double-submit
+    if (saveButton.disabled) {
+      return;
+    }
+    saveButton.disabled = true;
+
     if (activeCard.dataset.itemType === "news") {
       const isNew = activeCard.dataset.isNew === "true";
       if (!newsDateInput.value) {
         alert("Please enter a valid news date.");
+        saveButton.disabled = false;
         return;
       }
       const img = activeCard.querySelector(".article-image img");
@@ -443,9 +454,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const file = newsImageFileInput.files[0];
         if (file) {
           if (!validateImageFile(file)) {
+            saveButton.disabled = false;
             return;
           }
-          saveButton.disabled = true;
           try {
             const formData = new FormData();
             formData.append("image", file);
@@ -454,8 +465,9 @@ document.addEventListener("DOMContentLoaded", () => {
               body: formData
             });
             activeImageUrl = payload.url || activeImageUrl;
-          } finally {
+          } catch (err) {
             saveButton.disabled = false;
+            throw err;
           }
         }
 
@@ -485,6 +497,10 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       try {
         if (isNew) {
+          // include tempId so client can reconcile placeholder if needed
+          if (activeCard.dataset.tempId) {
+            payload.tempId = activeCard.dataset.tempId;
+          }
           const result = await requestJson("/api/news", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -492,6 +508,8 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           activeCard.dataset.id = result.id;
           activeCard.dataset.isNew = "false";
+          // clear temp id after server assigns real id
+          delete activeCard.dataset.tempId;
         } else {
           const id = Number(activeCard.dataset.id);
           await requestJson(`/api/news/${id}`, {
@@ -503,16 +521,19 @@ document.addEventListener("DOMContentLoaded", () => {
         sortNewsByDate();
       } catch (error) {
         alert(error.message);
+        saveButton.disabled = false;
         return;
       }
     } else {
       const isNew = activeCard.dataset.isNew === "true";
       if (!eventStartDateInput.value) {
         alert("Please enter a valid event start date.");
+        saveButton.disabled = false;
         return;
       }
       if (eventEndDateInput.value && eventEndDateInput.value < eventStartDateInput.value) {
         alert("Event end date must be the same or after the start date.");
+        saveButton.disabled = false;
         return;
       }
       const title = activeCard.querySelector("h3");
@@ -543,6 +564,9 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       try {
         if (isNew) {
+          if (activeCard.dataset.tempId) {
+            payload.tempId = activeCard.dataset.tempId;
+          }
           const result = await requestJson("/api/events", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -550,6 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           activeCard.dataset.id = result.id;
           activeCard.dataset.isNew = "false";
+          delete activeCard.dataset.tempId;
         } else {
           const id = Number(activeCard.dataset.id);
           await requestJson(`/api/events/${id}`, {
@@ -561,11 +586,14 @@ document.addEventListener("DOMContentLoaded", () => {
         sortEventsByDate();
       } catch (error) {
         alert(error.message);
+        saveButton.disabled = false;
         return;
       }
     }
 
     closeModal();
+    // re-enable save for next use
+    saveButton.disabled = false;
   });
 
   sortNewsByDate();
