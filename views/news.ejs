@@ -238,8 +238,10 @@
             </div>
           </div>
         </div>
-        <template id="eventCardTemplate">
-          <div class="event-card" data-item-type="event" data-id="" data-start-date="" data-end-date="" data-duration="" data-is-new="true">
+      <% } %>
+      <template id="eventCardTemplate">
+        <div class="event-card" data-item-type="event" data-id="" data-start-date="" data-end-date="" data-duration="" data-is-new="true">
+          <% if (isAdmin) { %>
             <div class="news-admin-actions">
               <button class="admin-icon-button admin-delete-button" type="button" title="Delete event" aria-label="Delete event">
                 <img src="/icons/trash.svg" alt="" aria-hidden="true" />
@@ -248,20 +250,22 @@
                 <img src="/icons/pen.svg" alt="" aria-hidden="true" />
               </button>
             </div>
-            <div class="event-date">
-              <div class="event-month">May</div>
-              <div class="event-day">1</div>
-            </div>
-            <div class="event-content">
-              <h3>New event</h3>
-              <p class="event-location event-location-text"></p>
-              <p class="event-info"></p>
-              <a href="#" class="event-link">Learn More →</a>
-            </div>
+          <% } %>
+          <div class="event-date">
+            <div class="event-month">May</div>
+            <div class="event-day">1</div>
           </div>
-        </template>
-        <template id="newsCardTemplate">
-          <article class="news-article" data-item-type="news" data-id="" data-news-date="" data-category="Announcements" data-is-new="true">
+          <div class="event-content">
+            <h3>New event</h3>
+            <p class="event-location event-location-text"></p>
+            <p class="event-info"></p>
+            <a href="#" class="event-link">Learn More →</a>
+          </div>
+        </div>
+      </template>
+      <template id="newsCardTemplate">
+        <article class="news-article" data-item-type="news" data-id="" data-news-date="" data-category="Announcements" data-is-new="true">
+          <% if (isAdmin) { %>
             <div class="news-admin-actions">
               <button class="admin-icon-button admin-delete-button" type="button" title="Delete news" aria-label="Delete news">
                 <img src="/icons/trash.svg" alt="" aria-hidden="true" />
@@ -270,23 +274,25 @@
                 <img src="/icons/pen.svg" alt="" aria-hidden="true" />
               </button>
             </div>
-            <div class="article-image">
-              <img src="/icons/placeholder.png" alt="News image" />
+          <% } %>
+          <div class="article-image">
+            <img src="/icons/placeholder.png" alt="News image" />
+          </div>
+          <div class="article-content">
+            <div class="article-meta">
+              <span class="article-date news-date">May 7, 2026</span>
+              <span class="article-category">Announcements</span>
             </div>
-            <div class="article-content">
-              <div class="article-meta">
-                <span class="article-date news-date">May 7, 2026</span>
-                <span class="article-category">Announcements</span>
-              </div>
-              <h3>New update</h3>
-              <p class="news-info">Add news details here.</p>
-              <a href="#" class="read-more">Read More →</a>
-            </div>
-          </article>
-        </template>
-      <% } %>
+            <h3>New update</h3>
+            <p class="news-info">Add news details here.</p>
+            <a href="#" class="read-more">Read More →</a>
+          </div>
+        </article>
+      </template>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/news-live.js"></script>
     <script src="/js/news.js"></script>
   </body>
 </html>

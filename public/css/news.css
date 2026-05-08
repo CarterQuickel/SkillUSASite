@@ -2,10 +2,8 @@
 
 .hero-news .hero-media {
   background: linear-gradient(rgba(5, 22, 47, 0.5), rgba(5, 22, 47, 0.35)),
-    url("/20250403_152033_54452148125_o.jpg")
-      center/cover no-repeat;
+    url("/albums/422025/20250403_152033_54452148125_o.jpg") center/cover no-repeat;
 }
-
 .news-container {
   padding: 4rem 1.5rem;
   background: #ffffff;
@@ -714,4 +712,51 @@
   .news-article.featured .article-image {
     min-height: 300px;
   }
+}
+
+/* Live update animations */
+@keyframes liveInsert {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes liveUpdate {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 76, 0);
+  }
+  45% {
+    box-shadow: 0 0 0 8px rgba(201, 162, 76, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 76, 0);
+  }
+}
+
+@keyframes liveRemove {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+.live-insert {
+  animation: liveInsert 360ms ease;
+}
+
+.live-update {
+  animation: liveUpdate 520ms ease;
+}
+
+.live-remove {
+  animation: liveRemove 240ms ease forwards;
 }

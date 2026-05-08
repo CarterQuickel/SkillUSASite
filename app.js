@@ -1,8 +1,10 @@
 const path = require("path");
 const fs = require("fs");
+const http = require("http");
 const express = require("express");
 const session = require("express-session");
 const multer = require("multer");
+const { Server } = require("socket.io");
 const {
 	initializeDatabase,
 	getStaffBySection,
@@ -20,9 +22,11 @@ const {
 require("dotenv").config();
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
-const PUBLIC_HOST = process.env.PUBLIC_HOST || "172.16.3.200";
+const PUBLIC_HOST = process.env.PUBLIC_HOST || "172.16.3.115";
 const uploadsDir = path.join(__dirname, "public", "uploads");
 
 app.set("view engine", "ejs");
@@ -68,6 +72,22 @@ const smtpConfig = {
 };
 
 const transporter = nodemailer.createTransport(smtpConfig);
+
+app.get("/api/images", (req, res) => {
+  const folder = req.query.folder;
+
+  const dirPath = path.join(__dirname, "public", folder);
+
+  fs.readdir(dirPath, (err, files) => {
+    if (err) return res.json([]);
+
+    const images = files
+      .filter(f => f.endsWith(".jpg") || f.endsWith(".png"))
+      .map(f => `/${folder}/${f}`);
+
+    res.json(images);
+  });
+});
 
 if (!fs.existsSync(uploadsDir)) {
 	fs.mkdirSync(uploadsDir, { recursive: true });
@@ -336,7 +356,7 @@ app.post("/api/news", async (req, res) => {
 			res.status(400).json({ error: "Title, info, and date are required." });
 			return;
 		}
-		const id = await createNewsItem({
+				const id = await createNewsItem({
 			title,
 			info,
 			imageUrl,
@@ -344,7 +364,10 @@ app.post("/api/news", async (req, res) => {
 			category,
 			isFeatured: false
 		});
-		res.status(201).json({ id });
+				const payload = { id, title, info, date, imageUrl, category, isFeatured: false };
+				if (req.body && req.body.tempId) payload.tempId = req.body.tempId;
+				io.emit("news-upsert", payload);
+				res.status(201).json({ id, tempId: req.body?.tempId || null });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to create news." });
 	}
@@ -366,6 +389,7 @@ app.put("/api/news/:id", async (req, res) => {
 			return;
 		}
 		await updateNewsItem(id, { title, info, imageUrl, date, category });
+		io.emit("news-upsert", { id, title, info, date, imageUrl, category });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update news." });
@@ -383,6 +407,7 @@ app.delete("/api/news/:id", async (req, res) => {
 			return;
 		}
 		await deleteNewsItem(id);
+		io.emit("news-delete", { id });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete news." });
@@ -404,7 +429,7 @@ app.post("/api/events", async (req, res) => {
 			res.status(400).json({ error: "Title, info, and start date are required." });
 			return;
 		}
-		const id = await createEventItem({
+				const id = await createEventItem({
 			title,
 			info,
 			location,
@@ -412,7 +437,10 @@ app.post("/api/events", async (req, res) => {
 			endDate,
 			duration
 		});
-		res.status(201).json({ id });
+				const payload = { id, title, info, location, startDate, endDate, duration };
+				if (req.body && req.body.tempId) payload.tempId = req.body.tempId;
+				io.emit("event-upsert", payload);
+				res.status(201).json({ id, tempId: req.body?.tempId || null });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to create event." });
 	}
@@ -435,6 +463,7 @@ app.put("/api/events/:id", async (req, res) => {
 			return;
 		}
 		await updateEventItem(id, { title, info, location, startDate, endDate, duration });
+		io.emit("event-upsert", { id, title, info, location, startDate, endDate, duration });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update event." });
@@ -452,6 +481,7 @@ app.delete("/api/events/:id", async (req, res) => {
 			return;
 		}
 		await deleteEventItem(id);
+		io.emit("event-delete", { id });
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete event." });
@@ -488,6 +518,11 @@ ${message}
 			req.session.formSuccess = true;
 			res.redirect("/contact");
 		}
+const startServer = async () => {
+	await initializeDatabase();
+	server.listen(PORT, HOST, () => {
+		const publicUrl = `http://${PUBLIC_HOST}:${PORT}`;
+		console.log(`Server running at ${publicUrl}`);
 	});
 });
 
@@ -572,4 +607,8 @@ ${message || "No additional information provided"}
 
 app.listen(PORT, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
+});
+startServer().catch((error) => {
+	console.error("Failed to start server:", error);
+	process.exit(1);
 });
