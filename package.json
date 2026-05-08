@@ -3,6 +3,20 @@
     "connect-sqlite3": "^0.9.16",
     "ejs": "^5.0.2",
     "express": "^5.2.1",
+    "node": "^24.15.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-usestateref": "^2.0.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "build-client": "esbuild widgets/album.tsx --bundle --outfile=public/album.js --loader:.css=css"
     "express-session": "^1.18.2",
     "multer": "^2.0.2",
     "node": "^24.15.0",
