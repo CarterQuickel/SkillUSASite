@@ -17,6 +17,8 @@ const {
 	deleteEventItem
 } = require("./db");
 
+require("dotenv").config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
@@ -48,6 +50,24 @@ app.use((req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "SkillsUSARealImages")));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+let nodemailer = require("nodemailer");
+
+// Configure the SMTP transport
+const smtpConfig = {
+	service: "dreamhost",
+	host: "smtp.dreamhost.com",
+	port: 465,
+	secure: true,
+	auth: {
+		user: process.env.EMAIL_USER,
+		pass: process.env.EMAIL_PASSWORD,
+	},
+};
+
+const transporter = nodemailer.createTransport(smtpConfig);
 
 if (!fs.existsSync(uploadsDir)) {
 	fs.mkdirSync(uploadsDir, { recursive: true });
@@ -64,6 +84,21 @@ const upload = multer({
 		}
 	}),
 	limits: { fileSize: 50 * 1024 * 1024 },
+	fileFilter: (req, file, cb) => {
+		const allowed = [".png", ".jpg", ".jpeg"];
+		const ext = path.extname(file.originalname).toLowerCase();
+		if (!allowed.includes(ext)) {
+			cb(new Error("Only PNG and JPG images are allowed."));
+			return;
+		}
+		cb(null, true);
+	}
+});
+
+// Separate multer instance for sponsor logos - uses memory storage for email attachments
+const logoUpload = multer({
+	storage: multer.memoryStorage(),
+	limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for logos
 	fileFilter: (req, file, cb) => {
 		const allowed = [".png", ".jpg", ".jpeg"];
 		const ext = path.extname(file.originalname).toLowerCase();
@@ -176,15 +211,36 @@ app.get("/competitions", (req, res) => {
 });
 
 app.get("/contact", (req, res) => {
-	res.render("contact");
+	const success = req.session.formSuccess || false;
+	const error = req.session.formError || null;
+	
+	// Clear session messages after retrieving them
+	req.session.formSuccess = false;
+	req.session.formError = null;
+	
+	res.render("contact", { success, error });
 });
 
 app.get("/donate", (req, res) => {
-	res.render("donate");
+	const success = req.session.formSuccess || false;
+	const error = req.session.formError || null;
+	
+	// Clear session messages after retrieving them
+	req.session.formSuccess = false;
+	req.session.formError = null;
+	
+	res.render("donate", { success, error });
 });
 
 app.get("/sponsor", (req, res) => {
-	res.render("sponsor");
+	const success = req.session.formSuccess || false;
+	const error = req.session.formError || null;
+	
+	// Clear session messages after retrieving them
+	req.session.formSuccess = false;
+	req.session.formError = null;
+	
+	res.render("sponsor", { success, error });
 });
 
 app.get("/news", (req, res) => {
@@ -406,15 +462,114 @@ app.get("/photos", (req, res) => {
 	res.render("photos");
 });
 
-const startServer = async () => {
-	await initializeDatabase();
-	app.listen(PORT, HOST, () => {
-		const publicUrl = `http://${PUBLIC_HOST}:${PORT}`;
-		console.log(`Server running at ${publicUrl}`);
-	});
-};
+app.post("/contact", (req, res) => {
+	const { name, email, subject, message } = req.body;
+	
+	const mailOptions = {
+		from: process.env.EMAIL_USER,
+		to: process.env.EMAIL_TO,
+		replyTo: email,
+		subject: `New Contact Form: ${subject}`,
+		text: `
+Name: ${name}
+Email: ${email}
+Subject: ${subject}
 
-startServer().catch((error) => {
-	console.error("Failed to start server:", error);
-	process.exit(1);
+Message:
+${message}
+		`,
+	};
+
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			req.session.formError = "Failed to send message";
+			res.redirect("/contact");
+		} else {
+			req.session.formSuccess = true;
+			res.redirect("/contact");
+		}
+	});
+});
+
+app.post("/donate", (req, res) => {
+	const { name, email, message } = req.body;
+
+	const mailOptions = {
+		from: process.env.EMAIL_USER,
+		to: process.env.EMAIL_TO,
+		replyTo: email,
+		subject: `New Donation Form from ${name}`,
+		text: `
+Name: ${name}
+Email: ${email}
+
+Message:
+${message}
+		`,
+	};
+
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			req.session.formError = "Failed to send donation inquiry";
+			res.redirect("/donate");
+		} else {
+			req.session.formSuccess = true;
+			res.redirect("/donate");
+		}
+	});
+});
+
+app.post("/sponsor", (req, res) => {
+	logoUpload.single("logo")(req, res, (error) => {
+		if (error) {
+			req.session.formError = error.message;
+			return res.redirect("/sponsor");
+		}
+
+		// Check if file was uploaded
+		if (!req.file) {
+			req.session.formError = "Company logo is required";
+			return res.redirect("/sponsor");
+		}
+
+		const { company, contact, email, tier, message } = req.body;
+		const logoBuffer = req.file.buffer;
+		const logoFilename = req.file.originalname;
+
+		const mailOptions = {
+			from: process.env.EMAIL_USER,
+			to: process.env.EMAIL_TO,
+			replyTo: email,
+			subject: `New Sponsorship Form from ${company}`,
+			text: `
+Company Name: ${company}
+Contact Person: ${contact}
+Email: ${email}
+Sponsorship Tier: ${tier}
+
+Additional Information:
+${message || "No additional information provided"}
+			`,
+			attachments: [
+				{
+					filename: logoFilename,
+					content: logoBuffer
+				}
+			]
+		};
+
+		transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				req.session.formError = "Failed to send sponsorship request";
+				res.redirect("/sponsor");
+			} else {
+				req.session.formSuccess = true;
+				res.redirect("/sponsor");
+			}
+		});
+	});
+});
+
+app.listen(PORT, () => {
+	console.log(`Server running at http://localhost:${PORT}`);
 });
