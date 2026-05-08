@@ -36,20 +36,39 @@
           <p>
             Your donation directly supports student competitions, training programs, and leadership
             development opportunities that prepare the next generation for successful careers.
+            Your support empowers students to become skilled professionals, leaders, and engaged
+            community members. Donate today to help shape the future of our students and our industry.
           </p>
         </div>
       </section>
 
-      <section class="donation-cta">
-        <div class="cta-content">
-          <h2>Ready to Make a Difference?</h2>
-          <p>
-            Your support empowers students to become skilled professionals, leaders, and engaged
-            community members. Donate today to help shape the future of our students and our industry.
-          </p>
-          <a href="/contact" class="cta-button">Get in Touch to Donate</a>
-        </div>
-    </section>
+      <main class="contact-container">
+      <div class="contact-intro">
+        <h2>Donate Today</h2>
+        <p>Use the form below to contact us about donations. We'll respond as soon as possible.</p>
+      </div>
+
+      <div class="form-container">
+        <form class="contact-form" method="POST" action="/donate">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+
+          <button type="submit" class="form-button">Send Message</button>
+        </form>
+      </div>
     </main>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
