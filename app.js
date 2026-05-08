@@ -517,16 +517,11 @@ ${message}
 		} else {
 			req.session.formSuccess = true;
 			res.redirect("/contact");
-		}
-const startServer = async () => {
-	await initializeDatabase();
-	server.listen(PORT, HOST, () => {
-		const publicUrl = `http://${PUBLIC_HOST}:${PORT}`;
-		console.log(`Server running at ${publicUrl}`);
+			}
+		}); // This line is now correctly placed
 	});
-});
 
-app.post("/donate", (req, res) => {
+	app.post("/donate", (req, res) => {
 	const { name, email, message } = req.body;
 
 	const mailOptions = {
@@ -605,9 +600,17 @@ ${message || "No additional information provided"}
 	});
 });
 
-app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
-});
+const startServer = async () => {
+	await initializeDatabase();
+	await new Promise((resolve, reject) => {
+		server.once("error", reject);
+		server.listen(PORT, HOST, () => {
+			console.log(`Server listening at http://${PUBLIC_HOST}:${PORT}`);
+			resolve();
+		});
+	});
+};
+
 startServer().catch((error) => {
 	console.error("Failed to start server:", error);
 	process.exit(1);
