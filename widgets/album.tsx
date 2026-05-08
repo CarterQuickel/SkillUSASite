@@ -10,6 +10,7 @@ type AlbumProps = {
 function Album({ title, description, imageFolderURL }: AlbumProps) {
     const [viewPics, setViewPics] = useState(false);
     const [images, setImages] = useState<string[]>([]);
+    const [viewDesc, setViewDesc] = useState(false);
 
     useEffect(() => {
       const loadImages = async () => {
@@ -47,7 +48,15 @@ function Album({ title, description, imageFolderURL }: AlbumProps) {
         <div className="album-content">
           <h2>{title}</h2>
           <div className="hLine"></div>
-          <p>{description}</p>
+          <div className="expansiveCont">
+            <p className="viewMore" onClick={(e) => {
+              e.stopPropagation();
+              setViewDesc(!viewDesc);
+            }}>
+              {viewDesc ? 'View Less ↑' : 'View More ↓'}
+            </p>
+            <p className={viewDesc ? 'desc' : 'desc hidden'}>{description}</p>
+          </div>
         </div>
       </div>
     </div>

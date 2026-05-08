@@ -21455,6 +21455,7 @@
   function Album({ title, description, imageFolderURL }) {
     const [viewPics, setViewPics] = (0, import_react.useState)(false);
     const [images, setImages] = (0, import_react.useState)([]);
+    const [viewDesc, setViewDesc] = (0, import_react.useState)(false);
     (0, import_react.useEffect)(() => {
       const loadImages = async () => {
         const res = await fetch(`/api/images?folder=albums/${imageFolderURL}`);
@@ -21470,7 +21471,10 @@
         document.body.style.overflow = "";
       }
     }, [viewPics]);
-    return /* @__PURE__ */ import_react.default.createElement("div", null, viewPics && /* @__PURE__ */ import_react.default.createElement("div", { className: "image-overlay" }, /* @__PURE__ */ import_react.default.createElement("button", { className: "close-button", onClick: () => setViewPics(false) }, "\xD7"), /* @__PURE__ */ import_react.default.createElement("div", { className: "image-scroll" }, images.map((img) => /* @__PURE__ */ import_react.default.createElement("img", { key: img, src: img })))), /* @__PURE__ */ import_react.default.createElement("div", { className: "album-card", onClick: () => setViewPics(!viewPics) }, /* @__PURE__ */ import_react.default.createElement("img", { src: images[0], alt: title, width: "300", height: "200" }), /* @__PURE__ */ import_react.default.createElement("div", { className: "album-content" }, /* @__PURE__ */ import_react.default.createElement("h2", null, title), /* @__PURE__ */ import_react.default.createElement("div", { className: "hLine" }), /* @__PURE__ */ import_react.default.createElement("p", null, description))));
+    return /* @__PURE__ */ import_react.default.createElement("div", null, viewPics && /* @__PURE__ */ import_react.default.createElement("div", { className: "image-overlay" }, /* @__PURE__ */ import_react.default.createElement("button", { className: "close-button", onClick: () => setViewPics(false) }, "\xD7"), /* @__PURE__ */ import_react.default.createElement("div", { className: "image-scroll" }, images.map((img) => /* @__PURE__ */ import_react.default.createElement("img", { key: img, src: img })))), /* @__PURE__ */ import_react.default.createElement("div", { className: "album-card", onClick: () => setViewPics(!viewPics) }, /* @__PURE__ */ import_react.default.createElement("img", { src: images[0], alt: title, width: "300", height: "200" }), /* @__PURE__ */ import_react.default.createElement("div", { className: "album-content" }, /* @__PURE__ */ import_react.default.createElement("h2", null, title), /* @__PURE__ */ import_react.default.createElement("div", { className: "hLine" }), /* @__PURE__ */ import_react.default.createElement("div", { className: "expansiveCont" }, /* @__PURE__ */ import_react.default.createElement("p", { className: "viewMore", onClick: (e) => {
+      e.stopPropagation();
+      setViewDesc(!viewDesc);
+    } }, viewDesc ? "View Less \u2191" : "View More \u2193"), /* @__PURE__ */ import_react.default.createElement("p", { className: viewDesc ? "desc" : "desc hidden" }, description)))));
   }
   var rootElements = document.querySelectorAll(".album");
   rootElements.forEach((rootElement) => {
