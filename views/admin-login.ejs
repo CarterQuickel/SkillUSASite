@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login | SkillsUSA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Spectral:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/admin-login.css" />
+  </head>
+  <body>
+    <main class="admin-login-shell">
+      <section class="admin-login-left">
+        <span class="admin-login-badge">SkillsUSA Admin</span>
+        <h1 class="admin-login-title">Secure access to chapter updates.</h1>
+        <p class="admin-login-subtitle">
+          Manage upcoming events, publish news, and keep the community in sync with the latest SkillsUSA updates.
+        </p>
+        <div class="admin-login-panel">
+          <h1>Admin Login</h1>
+          <p>Enter the admin credentials to continue.</p>
+
+        <% if (error) { %>
+          <p class="form-message error"><%= error %></p>
+        <% } %>
+        <% if (message) { %>
+          <p class="form-message success"><%= message %></p>
+        <% } %>
+
+          <form action="/admin/login" method="post" class="admin-login-grid">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" value="<%= username %>" required />
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required />
+
+            <div class="admin-login-actions">
+              <button type="submit" class="hero-button">Sign In</button>
+              <span class="admin-login-footer"><a href="/">Return to home</a></span>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside class="admin-login-ornament" aria-hidden="true">
+        <h2>Chapter operations</h2>
+        <ul>
+          <li><span></span> Publish news and spotlights</li>
+          <li><span></span> Schedule and update events</li>
+          <li><span></span> Maintain accurate details</li>
+        </ul>
+      </aside>
+    </main>
+  </body>
+</html>

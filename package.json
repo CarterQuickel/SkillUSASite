@@ -16,5 +16,9 @@
   },
   "scripts": {
     "build-client": "esbuild widgets/album.tsx --bundle --outfile=public/album.js --loader:.css=css"
+    "express-session": "^1.18.2",
+    "multer": "^2.0.2",
+    "node": "^24.15.0",
+    "sqlite3": "^6.0.1"
   }
 }
