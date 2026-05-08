@@ -715,3 +715,50 @@
     min-height: 300px;
   }
 }
+
+/* Live update animations */
+@keyframes liveInsert {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes liveUpdate {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 76, 0);
+  }
+  45% {
+    box-shadow: 0 0 0 8px rgba(201, 162, 76, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 76, 0);
+  }
+}
+
+@keyframes liveRemove {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+.live-insert {
+  animation: liveInsert 360ms ease;
+}
+
+.live-update {
+  animation: liveUpdate 520ms ease;
+}
+
+.live-remove {
+  animation: liveRemove 240ms ease forwards;
+}
