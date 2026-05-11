@@ -508,6 +508,35 @@ const getStaffBySection = async (section) => {
   );
 };
 
+const createStaffMember = async ({ name, role, bio, section, imagePath, sortOrder }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO staff (name, role, bio, section, image_path, sort_order, is_active)
+     VALUES (?, ?, ?, ?, ?, ?, 1)`
+    ,
+    [name, role, bio, section, imagePath || null, sortOrder || 0]
+  );
+  return result.lastID;
+};
+
+const updateStaffMember = async (id, { name, role, bio, section, imagePath }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE staff
+     SET name = ?, role = ?, bio = ?, section = ?, image_path = ?
+     WHERE id = ?`
+    ,
+    [name, role, bio, section, imagePath || null, id]
+  );
+};
+
+const deleteStaffMember = async (id) => {
+  const db = getDb();
+  await run(db, "UPDATE staff SET is_active = 0 WHERE id = ?", [id]);
+};
+
 const verifyAdminCredentials = async (username, password) => {
   const db = getDb();
   const row = await get(
@@ -703,6 +732,9 @@ const deleteSponsor = async (id) => {
 module.exports = {
   initializeDatabase,
   getStaffBySection,
+  createStaffMember,
+  updateStaffMember,
+  deleteStaffMember,
   verifyAdminCredentials,
   getNewsItems,
   createNewsItem,

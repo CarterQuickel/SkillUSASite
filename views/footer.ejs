@@ -53,7 +53,9 @@
       </div>
       <div class="footer-bottom">&copy; All rights reserved</div>
       <% if (isAdmin) { %>
-        <span class="hero-button">You are logged in!</span>
+        <form action="/admin/logout" method="post" class="admin-logout-form">
+          <button type="submit" class="hero-button">Log Out</button>
+        </form>
       <% } else { %>
         <a class="hero-button" href="/admin/login">Admin Login</a>
       <% } %>

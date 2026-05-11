@@ -63,6 +63,7 @@
   overflow: hidden;
   box-shadow: 0 8px 20px rgba(5, 22, 47, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
 }
 
 .team-member:hover {
@@ -111,4 +112,14 @@
   color: #2f3e55;
   font-size: 0.9rem;
   line-height: 1.6;
+}
+
+.admin-modal-form select {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #d6dde8;
+  font-family: "Outfit", "Arial", sans-serif;
+  font-size: 0.95rem;
+  background: #ffffff;
 }

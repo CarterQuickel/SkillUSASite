@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const folderInput = document.getElementById("adminAlbumFolder");
   const descriptionInput = document.getElementById("adminAlbumDescription");
   const imagesInput = document.getElementById("adminAlbumImages");
+  const folderImagesInput = document.getElementById("adminAlbumFolderImages");
   const imagesList = document.getElementById("adminAlbumImagesList");
   const saveButton = form.querySelector(".admin-modal-save");
   const addButton = document.querySelector('.admin-add-button[data-add-type="album"]');
@@ -32,6 +33,30 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     saveButton.disabled = false;
+  };
+
+  const collectUploadFiles = () => {
+    const output = [];
+    const seen = new Set();
+
+    const addFiles = (fileList) => {
+      if (!fileList) {
+        return;
+      }
+      Array.from(fileList).forEach((file) => {
+        const key = `${file.name}-${file.size}-${file.lastModified}`;
+        if (seen.has(key)) {
+          return;
+        }
+        seen.add(key);
+        output.push(file);
+      });
+    };
+
+    addFiles(imagesInput?.files);
+    addFiles(folderImagesInput?.files);
+
+    return output;
   };
 
   const renderImages = (urls) => {
@@ -97,6 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     imagesInput.value = "";
+    if (folderImagesInput) {
+      folderImagesInput.value = "";
+    }
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
   };
@@ -211,9 +239,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      if (imagesInput.files && imagesInput.files.length > 0 && activeAlbumId) {
+      const uploadFiles = collectUploadFiles();
+      if (uploadFiles.length > 0 && activeAlbumId) {
         const formData = new FormData();
-        Array.from(imagesInput.files).forEach((file) => {
+        uploadFiles.forEach((file) => {
           formData.append("images", file);
         });
         await fetch(`/api/albums/${activeAlbumId}/images`, {
