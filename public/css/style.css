@@ -170,6 +170,17 @@ body {
   box-shadow: 0 6px 18px rgba(201, 162, 76, 0.35);
 }
 
+.cta-button {
+  border: none;
+  cursor: pointer;
+  font-family: "Outfit", "Arial", sans-serif;
+}
+
+.admin-logout-form {
+  margin: 0;
+}
+
+
 .hero {
   position: relative;
   min-height: 500px;

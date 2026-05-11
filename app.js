@@ -8,6 +8,9 @@ const { Server } = require("socket.io");
 const {
 	initializeDatabase,
 	getStaffBySection,
+	createStaffMember,
+	updateStaffMember,
+	deleteStaffMember,
 	verifyAdminCredentials,
 	getNewsItems,
 	createNewsItem,
@@ -445,6 +448,8 @@ const ensureAdmin = (req, res) => {
 	return true;
 };
 
+const STAFF_SECTIONS = new Set(["Advisors", "Officers"]);
+
 const isValidAlbumFolder = (value) => /^[a-zA-Z0-9_-]+$/.test(value || "");
 
 const loadAlbum = async (req, res, next) => {
@@ -609,6 +614,81 @@ app.delete("/api/events/:id", async (req, res) => {
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete event." });
+	}
+});
+
+app.post("/api/staff", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const name = (req.body.name || "").trim();
+		const role = (req.body.role || "").trim();
+		const bio = (req.body.bio || "").trim();
+		const section = (req.body.section || "").trim();
+		const imageUrl = (req.body.imageUrl || "/icons/placeholder.png").trim();
+		if (!name || !role || !bio || !section) {
+			res.status(400).json({ error: "Name, role, bio, and section are required." });
+			return;
+		}
+		if (!STAFF_SECTIONS.has(section)) {
+			res.status(400).json({ error: "Invalid section." });
+			return;
+		}
+		const id = await createStaffMember({
+			name,
+			role,
+			bio,
+			section,
+			imagePath: imageUrl,
+			sortOrder: 0
+		});
+		res.status(201).json({ id });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to create staff member." });
+	}
+});
+
+app.put("/api/staff/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		const name = (req.body.name || "").trim();
+		const role = (req.body.role || "").trim();
+		const bio = (req.body.bio || "").trim();
+		const section = (req.body.section || "").trim();
+		const imageUrl = (req.body.imageUrl || "").trim();
+		if (!id || !name || !role || !bio || !section) {
+			res.status(400).json({ error: "Name, role, bio, and section are required." });
+			return;
+		}
+		if (!STAFF_SECTIONS.has(section)) {
+			res.status(400).json({ error: "Invalid section." });
+			return;
+		}
+		await updateStaffMember(id, { name, role, bio, section, imagePath: imageUrl || "/icons/placeholder.png" });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update staff member." });
+	}
+});
+
+app.delete("/api/staff/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		if (!id) {
+			res.status(400).json({ error: "Invalid id." });
+			return;
+		}
+		await deleteStaffMember(id);
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete staff member." });
 	}
 });
 

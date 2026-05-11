@@ -176,3 +176,24 @@
   font-size: 0.7rem;
   padding: 0.2rem 0.45rem;
 }
+
+#adminAlbumModal .admin-modal-dialog {
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+#adminAlbumModal .admin-modal-body {
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+#adminAlbumModal .admin-modal-form {
+  max-height: 70vh;
+  overflow: auto;
+  padding-right: 0.5rem;
+}
+
+#adminAlbumModal .admin-modal-preview {
+  max-height: 70vh;
+  overflow: auto;
+}
