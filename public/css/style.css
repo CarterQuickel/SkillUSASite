@@ -254,14 +254,6 @@ body {
   color: var(--gold);
 }
 
-.footer-grid a:visited {
-  color: var(--white);
-}
-
-.footer-grid a:active {
-  color: var(--white);
-}
-
 .social {
   display: flex;
   gap: 0.6rem;
