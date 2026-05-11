@@ -7,6 +7,19 @@
     padding: 20px 0px 100px 0px;
 }
 
+.album-shell {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.album-shell .news-admin-actions {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+}
+
 .album {
     width: 100%;
     display: block;
