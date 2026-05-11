@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const editModal = document.getElementById("adminSponsorModal");
-  if (!editModal) {
-    return;
-  }
-
-  const editForm = document.getElementById("adminSponsorForm");
-  const modalTitle = document.getElementById("adminSponsorModalTitle");
-  const nameInput = document.getElementById("adminSponsorName");
-  const linkInput = document.getElementById("adminSponsorLink");
-  const logoInput = document.getElementById("adminSponsorLogo");
-  const previewCard = document.getElementById("adminSponsorPreview");
-  const saveButton = editForm.querySelector(".admin-modal-save");
   const sponsorsGrid = document.querySelector(".sponsors-grid");
+
+  const openSponsorLink = (linkUrl) => {
+    if (!linkUrl || linkUrl === "#") {
+      return;
+    }
+    window.open(linkUrl, "_blank", "noopener");
+  };
+
+  const getSponsorLink = (linkEl) => {
+    const card = linkEl?.closest(".sponsor-card");
+    return card?.dataset.linkUrl || linkEl?.dataset.linkUrl || "";
+  };
 
   const maxLogoSize = 50 * 1024 * 1024;
   const allowedTypes = ["image/png", "image/jpeg"];
@@ -70,6 +70,48 @@ document.addEventListener("DOMContentLoaded", () => {
     img.addEventListener("load", () => applyAspectRatio(card, img), { once: true });
   };
 
+  if (sponsorsGrid) {
+    sponsorsGrid.addEventListener("click", (event) => {
+      const linkEl = event.target.closest(".sponsor-link");
+      if (!linkEl) {
+        return;
+      }
+      const linkUrl = getSponsorLink(linkEl);
+      openSponsorLink(linkUrl);
+    });
+
+    sponsorsGrid.addEventListener("keydown", (event) => {
+      const linkEl = event.target.closest(".sponsor-link");
+      if (!linkEl) {
+        return;
+      }
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+      event.preventDefault();
+      const linkUrl = getSponsorLink(linkEl);
+      openSponsorLink(linkUrl);
+    });
+  }
+
+  const editModal = document.getElementById("adminSponsorModal");
+  if (!editModal) {
+    if (sponsorsGrid) {
+      sponsorsGrid.querySelectorAll(".sponsor-card").forEach((card) => {
+        updateAspectFromImage(card);
+      });
+    }
+    return;
+  }
+
+  const editForm = document.getElementById("adminSponsorForm");
+  const modalTitle = document.getElementById("adminSponsorModalTitle");
+  const nameInput = document.getElementById("adminSponsorName");
+  const linkInput = document.getElementById("adminSponsorLink");
+  const logoInput = document.getElementById("adminSponsorLogo");
+  const previewCard = document.getElementById("adminSponsorPreview");
+  const saveButton = editForm.querySelector(".admin-modal-save");
+
   const setSponsorCard = (card, { name, logoUrl, linkUrl }) => {
     card.dataset.name = name;
     card.dataset.logoUrl = logoUrl;
@@ -79,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const linkEl = card.querySelector(".sponsor-link");
     if (linkEl) {
-      linkEl.setAttribute("href", linkUrl);
+      linkEl.dataset.linkUrl = linkUrl;
       linkEl.setAttribute("aria-label", `Visit ${label}`);
     }
 
@@ -141,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const linkEl = clone.querySelector(".sponsor-link");
     if (linkEl) {
-      linkEl.setAttribute("href", linkUrl);
+      linkEl.dataset.linkUrl = linkUrl;
       linkEl.setAttribute("aria-label", `Visit ${name}`);
     }
 

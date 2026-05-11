@@ -100,11 +100,11 @@
                   </button>
                 </div>
               <% } %>
-              <a class="sponsor-link" href="<%= sponsor.link_url %>" target="_blank" rel="noopener" aria-label="Visit <%= sponsor.name || 'Sponsor' %>">
+              <div class="sponsor-link" role="link" tabindex="0" aria-label="Visit <%= sponsor.name || 'Sponsor' %>">
                 <span class="sponsor-logo">
                   <img src="<%= sponsor.logo_url %>" alt="<%= sponsor.name || 'Sponsor' %> logo" />
                 </span>
-              </a>
+              </div>
             </div>
           <% }) %>
         </div>
@@ -151,11 +151,11 @@
                 <img src="/icons/pen.svg" alt="" aria-hidden="true" />
               </button>
             </div>
-            <a class="sponsor-link" href="#" target="_blank" rel="noopener" aria-label="Visit sponsor">
+            <div class="sponsor-link" role="link" tabindex="0" aria-label="Visit sponsor">
               <span class="sponsor-logo">
                 <img src="/icons/placeholder.png" alt="Sponsor logo" />
               </span>
-            </a>
+            </div>
           </div>
         </template>
       <% } %>
