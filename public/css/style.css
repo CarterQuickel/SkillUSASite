@@ -60,6 +60,54 @@ body {
   filter: invert(1);
 }
 
+/* Hover state: gold background and darker gold icon tint */
+.icon-circle a {
+  display: inline-grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.icon-circle:hover {
+  background: var(--gold);
+}
+
+.icon-circle:hover img {
+  filter: none; /* show original icon colors over the gold background */
+}
+
+/* Footer social links */
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.social-text {
+  font-size: 0.95rem;
+  color: #f0f0f0; /* will be overridden by parent footer styles */
+}
+
+/* Small screens: keep icons on left but reduce gap */
+@media (max-width: 600px) {
+  .social-links {
+    gap: 0.25rem;
+  }
+  .social-text {
+    font-size: 0.9rem;
+  }
+}
+
 .site-header {
   background: var(--white);
   position: sticky;
