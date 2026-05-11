@@ -318,6 +318,96 @@ const seedEventsIfMissing = async (db) => {
   }
 };
 
+const seedAlbumsIfMissing = async (db) => {
+  const row = await get(db, "SELECT COUNT(*) AS count FROM albums");
+  if (row.count > 0) {
+    return;
+  }
+
+  const seedAlbums = [
+    {
+      title: "Feb. 27, 2026 - NTHS & SkillsUSA",
+      description: "Seventy-five members of our SkillsUSA and National Technical Honor Society chapters participated in the Capital Area Cool Schools Polar Plunge on Feb. 27, 2026. They raised over $1,000 for Special Olympics Pennsylvania, which will go toward unified sports programs, engagement activities, training resources, and much more.",
+      folder: "2272026"
+    },
+    {
+      title: "Feb. 18, 2026 - SkillsUSA & Culinary Arts",
+      description: "The advisors and class representatives for SkillsUSA came together during a special luncheon on Feb. 18, 2026. It was an opportunity to discuss specific chapter topics and review two important life skills: dining etiquette and table manners. The meal was prepared by students in our Culinary Arts program, so they benefited from a chance to practice their food service techniques and front-of-house skills.",
+      folder: "2182026"
+    },
+    {
+      title: "Dec. 11, 2025 - Student Council & SkillsUSA Free Hunger York Event",
+      description: "We're #YorkTechProud to have students and employees who value giving back to the community. Members of Student Council and SkillsUSA volunteered at the York County Food Bank on Dec. 11, 2025. They packed 1,280 boxes of food for senior citizens in need. Way to go, Spartans!",
+      folder: "freeHungerYork"
+    },
+    {
+      title: "April 2-4, 2025 - SkillsUSA National Leadership and Skills Conference",
+      description: "Thirteen students and two advisors attended the SkillsUSA Pennsylvania Leadership and Skills Conference in Hershey from April 2-4, 2025. While there, Felicity Troup was elected a state officer, and Rylan McCubbin finished third in the Automotive Technology competition! Thanks to his great performance, Rylan earned a $6,000 scholarship and a Snap-on tool set worth $400. Congratulations, Felicity and Rylan, and thank you to everyone who represented Spartan Nation during this event!",
+      folder: "422025"
+    },
+    {
+      title: "Jan. 28, 2025 - SkillsUSA",
+      description: "SkillsUSA members participated in an organizational meeting and awards ceremony.",
+      folder: "1282025"
+    },
+    {
+      title: "Dec. 17, 2024 - FFA and SkillsUSA",
+      description: "Students in FFA and SkillsUSA went on a community service field trip to New Bridgeville on Dec. 17,2024. They pruned trees that were planted by York Tech students in 2014! Thank you to Alan Miller, owner of River Rock Landscape and an Occupational Advisory Committee member at York Tech, for assisting with this learning opportunity.",
+      folder: "12172024"
+    },
+    {
+      title: "Nov. 7, 2024 - SkillsUSA PA State Leadership and Skills Conference",
+      description: "Our chapter of SkillsUSA is gearing up for another round of conferences, competitions, and skill development. The leadership team and officers met on Nov. 7, 2024, to prepare for a Central Region workshop being held in Gettysburg. They were also fitted for their iconic red jackets, which is always exciting! Thank you to Mr. Balsavage and Mr. Spahr, the chapter's advisors, for helping members prepare for career success through this great organization!",
+      folder: "1172024"
+    }
+  ];
+
+  for (const album of seedAlbums) {
+    await run(
+      db,
+      `INSERT INTO albums (title, description, folder)
+       VALUES (?, ?, ?)`
+      ,
+      [album.title, album.description, album.folder]
+    );
+  }
+};
+
+const seedSponsorsIfMissing = async (db) => {
+  const row = await get(db, "SELECT COUNT(*) AS count FROM sponsors");
+  if (row.count > 0) {
+    return;
+  }
+
+  const seedSponsors = [
+    { name: "SECCO Electric" },
+    { name: "Faulkner" },
+    { name: "Hoffman Ford" },
+    { name: "Remco, Inc." },
+    { name: "Pennsylvania College of Technology" },
+    { name: "Ainsworth" },
+    { name: "Crown Automotive" },
+    { name: "AP Williams Construction" },
+    { name: "DCTS Education Foundation" },
+    { name: "Dauphin County" },
+    { name: "Collision Repair Technology" },
+    { name: "LaPorte Painting" },
+    { name: "Machinery Tech" },
+    { name: "IEC Pennsylvania" },
+    { name: "Witmer Group" }
+  ];
+
+  for (const [index, sponsor] of seedSponsors.entries()) {
+    await run(
+      db,
+      `INSERT INTO sponsors (name, logo_url, link_url, sort_order)
+       VALUES (?, ?, ?, ?)`
+      ,
+      [sponsor.name, "/icons/placeholder.png", "/sponsor", index + 1]
+    );
+  }
+};
+
 const initializeDatabase = async () => {
   const db = getDb();
 
@@ -373,11 +463,36 @@ const initializeDatabase = async () => {
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`
   );
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS sponsors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      logo_url TEXT NOT NULL,
+      link_url TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`
+  );
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS albums (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      folder TEXT NOT NULL UNIQUE,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`
+  );
 
   await seedAdminIfMissing(db);
   await seedStaffIfMissing(db);
   await seedNewsIfMissing(db);
   await seedEventsIfMissing(db);
+  await seedSponsorsIfMissing(db);
+  await seedAlbumsIfMissing(db);
   await ensureAdminPassword(db);
 };
 
@@ -391,6 +506,35 @@ const getStaffBySection = async (section) => {
      ORDER BY sort_order, name`,
     [section]
   );
+};
+
+const createStaffMember = async ({ name, role, bio, section, imagePath, sortOrder }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO staff (name, role, bio, section, image_path, sort_order, is_active)
+     VALUES (?, ?, ?, ?, ?, ?, 1)`
+    ,
+    [name, role, bio, section, imagePath || null, sortOrder || 0]
+  );
+  return result.lastID;
+};
+
+const updateStaffMember = async (id, { name, role, bio, section, imagePath }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE staff
+     SET name = ?, role = ?, bio = ?, section = ?, image_path = ?
+     WHERE id = ?`
+    ,
+    [name, role, bio, section, imagePath || null, id]
+  );
+};
+
+const deleteStaffMember = async (id) => {
+  const db = getDb();
+  await run(db, "UPDATE staff SET is_active = 0 WHERE id = ?", [id]);
 };
 
 const verifyAdminCredentials = async (username, password) => {
@@ -485,9 +629,112 @@ const deleteEventItem = async (id) => {
   await run(db, "DELETE FROM event_items WHERE id = ?", [id]);
 };
 
+const getAlbums = async () => {
+  const db = getDb();
+  return all(
+    db,
+    `SELECT id, title, description, folder
+     FROM albums
+     ORDER BY created_at DESC, id DESC`
+  );
+};
+
+const getAlbumById = async (id) => {
+  const db = getDb();
+  return get(
+    db,
+    `SELECT id, title, description, folder
+     FROM albums
+     WHERE id = ?`,
+    [id]
+  );
+};
+
+const getAlbumByFolder = async (folder) => {
+  const db = getDb();
+  return get(
+    db,
+    `SELECT id, title, description, folder
+     FROM albums
+     WHERE folder = ?`,
+    [folder]
+  );
+};
+
+const createAlbum = async ({ title, description, folder }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO albums (title, description, folder)
+     VALUES (?, ?, ?)`
+    ,
+    [title, description, folder]
+  );
+  return result.lastID;
+};
+
+const updateAlbum = async (id, { title, description }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE albums
+     SET title = ?, description = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [title, description, id]
+  );
+};
+
+const deleteAlbum = async (id) => {
+  const db = getDb();
+  await run(db, "DELETE FROM albums WHERE id = ?", [id]);
+};
+
+const getSponsors = async () => {
+  const db = getDb();
+  return all(
+    db,
+    `SELECT id, name, logo_url, link_url, sort_order
+     FROM sponsors
+     ORDER BY sort_order ASC, name ASC, id ASC`
+  );
+};
+
+const createSponsor = async ({ name, logoUrl, linkUrl, sortOrder }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO sponsors (name, logo_url, link_url, sort_order)
+     VALUES (?, ?, ?, ?)`
+    ,
+    [name, logoUrl, linkUrl, sortOrder || 0]
+  );
+  return result.lastID;
+};
+
+const updateSponsor = async (id, { name, logoUrl, linkUrl, sortOrder }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE sponsors
+     SET name = ?, logo_url = ?, link_url = ?, sort_order = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [name, logoUrl, linkUrl, sortOrder || 0, id]
+  );
+};
+
+const deleteSponsor = async (id) => {
+  const db = getDb();
+  await run(db, "DELETE FROM sponsors WHERE id = ?", [id]);
+};
+
 module.exports = {
   initializeDatabase,
   getStaffBySection,
+  createStaffMember,
+  updateStaffMember,
+  deleteStaffMember,
   verifyAdminCredentials,
   getNewsItems,
   createNewsItem,
@@ -496,5 +743,15 @@ module.exports = {
   getEventItems,
   createEventItem,
   updateEventItem,
-  deleteEventItem
+  deleteEventItem,
+  getSponsors,
+  createSponsor,
+  updateSponsor,
+  deleteSponsor,
+  getAlbums,
+  getAlbumById,
+  getAlbumByFolder,
+  createAlbum,
+  updateAlbum,
+  deleteAlbum
 };

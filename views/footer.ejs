@@ -29,14 +29,14 @@
             <li><a href="/">Home</a></li>
             <li><a href="/about">About Us</a></li>
             <li><a href="/competitions">Competitions</a></li>
-            <li><a href="/donate">Support</a></li>
+            <li><a href="/donate">Donate</a></li>
             <li><a href="/news">News</a></li>
             <li><a href="/photos">Photos</a></li>
           </ul>
         </div>
         <div>
           <h4>About</h4>
-          <p>6001 Locust Lane<br />Harrisburg, PA 17901</p>
+          <p>2179 S Queen Street<br />York, PA 17402</p>
           <p>
             SkillsUSA Inc. is a national nonprofit and tax-exempt student organization under the
             Internal Revenue Service Code Section (501)(c)(3).
@@ -44,16 +44,26 @@
         </div>
         <div>
           <h4>Contact Us</h4>
-          <p>&#128203; Contact Form</p>
-          <p>&#128222; 717-652-3170</p>
-          <p>&#9993; jhaste@dcts.org</p>
-          <p>&#128247; dcts_skillsusa</p>
-          <p>&#128100; DC Tech - Skills USA</p>
+          <p>&#128203; <a href="/contact">Contact Form</a></p>
+          <p>&#128222; 717-741-0820</p>
+          <p>&#9993; mbalsavage@ytech.edu</p>
+          <p class="social-links">
+            <a href="https://www.instagram.com/ycst_spartans_" target="_blank" rel="noopener noreferrer" aria-label="York Tech Instagram" class="social-link">
+              <span class="icon-circle"><img src="/icons/instagram-icon.png" alt="Instagram" width="24" height="24" /></span>
+              <span class="social-text">@ycst_spartans_</span>
+            </a>
+            <a href="https://www.facebook.com/YorkTechSpartans" target="_blank" rel="noopener noreferrer" aria-label="York Tech Facebook" class="social-link">
+              <span class="icon-circle"><img src="/icons/facebook-icon.png" alt="Facebook" width="20" height="20" /></span>
+              <span class="social-text">YorkTechSpartans</span>
+            </a>
+          </p>
         </div>
       </div>
       <div class="footer-bottom">&copy; All rights reserved</div>
       <% if (isAdmin) { %>
-        <span class="hero-button">You are logged in!</span>
+        <form action="/admin/logout" method="post" class="admin-logout-form">
+          <button type="submit" class="hero-button">Log Out</button>
+        </form>
       <% } else { %>
         <a class="hero-button" href="/admin/login">Admin Login</a>
       <% } %>

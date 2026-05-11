@@ -142,3 +142,58 @@
   font-weight: 500;
   margin-bottom: 0;
 }
+
+.album-admin-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.album-admin-images button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+.album-admin-images img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #d5dbe6;
+  display: block;
+}
+
+.album-admin-images .remove-chip {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(177, 41, 43, 0.9);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.45rem;
+}
+
+#adminAlbumModal .admin-modal-dialog {
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+#adminAlbumModal .admin-modal-body {
+  max-height: 70vh;
+  overflow: hidden;
+}
+
+#adminAlbumModal .admin-modal-form {
+  max-height: 70vh;
+  overflow: auto;
+  padding-right: 0.5rem;
+}
+
+#adminAlbumModal .admin-modal-preview {
+  max-height: 70vh;
+  overflow: auto;
+}

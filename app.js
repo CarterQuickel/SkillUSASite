@@ -8,6 +8,9 @@ const { Server } = require("socket.io");
 const {
 	initializeDatabase,
 	getStaffBySection,
+	createStaffMember,
+	updateStaffMember,
+	deleteStaffMember,
 	verifyAdminCredentials,
 	getNewsItems,
 	createNewsItem,
@@ -16,7 +19,17 @@ const {
 	getEventItems,
 	createEventItem,
 	updateEventItem,
-	deleteEventItem
+	deleteEventItem,
+	getSponsors,
+	createSponsor,
+	updateSponsor,
+	deleteSponsor,
+	getAlbums,
+	getAlbumById,
+	getAlbumByFolder,
+	createAlbum,
+	updateAlbum,
+	deleteAlbum
 } = require("./db");
 
 require("dotenv").config();
@@ -25,9 +38,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || "0.0.0.0";
-const PUBLIC_HOST = process.env.PUBLIC_HOST || "172.16.3.115";
+const PUBLIC_HOST = process.env.PUBLIC_HOST || process.env.HOST || "172.16.3.115";
+const HOST = process.env.HOST || PUBLIC_HOST || "0.0.0.0";
 const uploadsDir = path.join(__dirname, "public", "uploads");
+const albumsDir = path.join(__dirname, "public", "albums");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -74,23 +88,36 @@ const smtpConfig = {
 const transporter = nodemailer.createTransport(smtpConfig);
 
 app.get("/api/images", (req, res) => {
-  const folder = req.query.folder;
+	const rawFolder = String(req.query.folder || "");
+	const normalized = path.normalize(rawFolder).replace(/^([.][.][\\/])+/, "");
+	const albumsRoot = path.join(__dirname, "public", "albums");
+	const dirPath = path.resolve(__dirname, "public", normalized);
 
-  const dirPath = path.join(__dirname, "public", folder);
+	if (!normalized.startsWith("albums")) {
+		res.json([]);
+		return;
+	}
+	if (!dirPath.startsWith(albumsRoot + path.sep) && dirPath !== albumsRoot) {
+		res.json([]);
+		return;
+	}
 
-  fs.readdir(dirPath, (err, files) => {
-    if (err) return res.json([]);
+	fs.readdir(dirPath, (err, files) => {
+		if (err) return res.json([]);
 
-    const images = files
-      .filter(f => f.endsWith(".jpg") || f.endsWith(".png"))
-      .map(f => `/${folder}/${f}`);
+		const images = files
+			.filter((file) => file.endsWith(".jpg") || file.endsWith(".png") || file.endsWith(".jpeg"))
+			.map((file) => `/${normalized}/${file}`);
 
-    res.json(images);
-  });
+		res.json(images);
+	});
 });
 
 if (!fs.existsSync(uploadsDir)) {
 	fs.mkdirSync(uploadsDir, { recursive: true });
+}
+if (!fs.existsSync(albumsDir)) {
+	fs.mkdirSync(albumsDir, { recursive: true });
 }
 
 const upload = multer({
@@ -115,7 +142,60 @@ const upload = multer({
 	}
 });
 
-// Separate multer instance for sponsor logos - uses memory storage for email attachments
+const sponsorUpload = multer({
+	storage: multer.diskStorage({
+		destination: uploadsDir,
+		filename: (req, file, cb) => {
+			const timestamp = Date.now();
+			const random = Math.round(Math.random() * 1e9);
+			const ext = path.extname(file.originalname).toLowerCase();
+			cb(null, `sponsor-${timestamp}-${random}${ext}`);
+		}
+	}),
+	limits: { fileSize: 50 * 1024 * 1024 },
+	fileFilter: (req, file, cb) => {
+		const allowed = [".png", ".jpg", ".jpeg"];
+		const ext = path.extname(file.originalname).toLowerCase();
+		if (!allowed.includes(ext)) {
+			cb(new Error("Only PNG and JPG images are allowed."));
+			return;
+		}
+		cb(null, true);
+	}
+});
+
+const albumUpload = multer({
+	storage: multer.diskStorage({
+		destination: (req, file, cb) => {
+			const folder = req.album?.folder;
+			if (!folder) {
+				cb(new Error("Album folder missing."));
+				return;
+			}
+			const dir = path.join(albumsDir, folder);
+			fs.mkdirSync(dir, { recursive: true });
+			cb(null, dir);
+		},
+		filename: (req, file, cb) => {
+			const timestamp = Date.now();
+			const random = Math.round(Math.random() * 1e9);
+			const ext = path.extname(file.originalname).toLowerCase();
+			cb(null, `album-${timestamp}-${random}${ext}`);
+		}
+	}),
+	limits: { fileSize: 50 * 1024 * 1024 },
+	fileFilter: (req, file, cb) => {
+		const allowed = [".png", ".jpg", ".jpeg"];
+		const ext = path.extname(file.originalname).toLowerCase();
+		if (!allowed.includes(ext)) {
+			cb(new Error("Only PNG and JPG images are allowed."));
+			return;
+		}
+		cb(null, true);
+	}
+});
+
+// Separate multer instance for sponsor form logos - uses memory storage for email attachments
 const logoUpload = multer({
 	storage: multer.memoryStorage(),
 	limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for logos
@@ -130,8 +210,13 @@ const logoUpload = multer({
 	}
 });
 
-app.get("/", (req, res) => {
-	res.render("index");
+app.get("/", async (req, res, next) => {
+	try {
+		const sponsors = await getSponsors();
+		res.render("index", { sponsors });
+	} catch (error) {
+		next(error);
+	}
 });
 
 app.get("/bars", (req, res) => {
@@ -200,6 +285,27 @@ app.post("/admin/upload", (req, res) => {
 	}
 
 	upload.single("image")(req, res, (error) => {
+		if (error) {
+			res.status(400).json({ error: error.message });
+			return;
+		}
+
+		if (!req.file) {
+			res.status(400).json({ error: "No file uploaded." });
+			return;
+		}
+
+		res.json({ url: `/uploads/${req.file.filename}` });
+	});
+});
+
+app.post("/admin/sponsor-upload", (req, res) => {
+	if (!req.session.isAdmin) {
+		res.status(403).json({ error: "Unauthorized" });
+		return;
+	}
+
+	sponsorUpload.single("logo")(req, res, (error) => {
 		if (error) {
 			res.status(400).json({ error: error.message });
 			return;
@@ -340,6 +446,29 @@ const ensureAdmin = (req, res) => {
 		return false;
 	}
 	return true;
+};
+
+const STAFF_SECTIONS = new Set(["Advisors", "Officers"]);
+
+const isValidAlbumFolder = (value) => /^[a-zA-Z0-9_-]+$/.test(value || "");
+
+const loadAlbum = async (req, res, next) => {
+	const id = Number(req.params.id);
+	if (!id) {
+		res.status(400).json({ error: "Invalid album id." });
+		return;
+	}
+	try {
+		const album = await getAlbumById(id);
+		if (!album) {
+			res.status(404).json({ error: "Album not found." });
+			return;
+		}
+		req.album = album;
+		next();
+	} catch (error) {
+		next(error);
+	}
 };
 
 app.post("/api/news", async (req, res) => {
@@ -488,8 +617,253 @@ app.delete("/api/events/:id", async (req, res) => {
 	}
 });
 
-app.get("/photos", (req, res) => {
-	res.render("photos");
+app.post("/api/staff", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const name = (req.body.name || "").trim();
+		const role = (req.body.role || "").trim();
+		const bio = (req.body.bio || "").trim();
+		const section = (req.body.section || "").trim();
+		const imageUrl = (req.body.imageUrl || "/icons/placeholder.png").trim();
+		if (!name || !role || !bio || !section) {
+			res.status(400).json({ error: "Name, role, bio, and section are required." });
+			return;
+		}
+		if (!STAFF_SECTIONS.has(section)) {
+			res.status(400).json({ error: "Invalid section." });
+			return;
+		}
+		const id = await createStaffMember({
+			name,
+			role,
+			bio,
+			section,
+			imagePath: imageUrl,
+			sortOrder: 0
+		});
+		res.status(201).json({ id });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to create staff member." });
+	}
+});
+
+app.put("/api/staff/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		const name = (req.body.name || "").trim();
+		const role = (req.body.role || "").trim();
+		const bio = (req.body.bio || "").trim();
+		const section = (req.body.section || "").trim();
+		const imageUrl = (req.body.imageUrl || "").trim();
+		if (!id || !name || !role || !bio || !section) {
+			res.status(400).json({ error: "Name, role, bio, and section are required." });
+			return;
+		}
+		if (!STAFF_SECTIONS.has(section)) {
+			res.status(400).json({ error: "Invalid section." });
+			return;
+		}
+		await updateStaffMember(id, { name, role, bio, section, imagePath: imageUrl || "/icons/placeholder.png" });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update staff member." });
+	}
+});
+
+app.delete("/api/staff/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		if (!id) {
+			res.status(400).json({ error: "Invalid id." });
+			return;
+		}
+		await deleteStaffMember(id);
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete staff member." });
+	}
+});
+
+app.post("/api/albums", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const title = (req.body.title || "").trim();
+		const description = (req.body.description || "").trim();
+		const folder = (req.body.folder || "").trim();
+		if (!title || !description || !folder) {
+			res.status(400).json({ error: "Title, description, and folder are required." });
+			return;
+		}
+		if (!isValidAlbumFolder(folder)) {
+			res.status(400).json({ error: "Folder must use letters, numbers, hyphens, or underscores." });
+			return;
+		}
+		const existing = await getAlbumByFolder(folder);
+		if (existing) {
+			res.status(400).json({ error: "Folder already exists." });
+			return;
+		}
+		const id = await createAlbum({ title, description, folder });
+		const dirPath = path.join(albumsDir, folder);
+		fs.mkdirSync(dirPath, { recursive: true });
+		res.status(201).json({ id });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to create album." });
+	}
+});
+
+app.put("/api/albums/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		const title = (req.body.title || "").trim();
+		const description = (req.body.description || "").trim();
+		if (!id || !title || !description) {
+			res.status(400).json({ error: "Title and description are required." });
+			return;
+		}
+		await updateAlbum(id, { title, description });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update album." });
+	}
+});
+
+app.delete("/api/albums/:id", loadAlbum, async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const folder = req.album.folder;
+		await deleteAlbum(req.album.id);
+		const dirPath = path.join(albumsDir, folder);
+		await fs.promises.rm(dirPath, { recursive: true, force: true });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete album." });
+	}
+});
+
+app.post("/api/albums/:id/images", loadAlbum, (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	albumUpload.array("images", 50)(req, res, (error) => {
+		if (error) {
+			res.status(400).json({ error: error.message });
+			return;
+		}
+		if (!req.files || req.files.length === 0) {
+			res.status(400).json({ error: "No files uploaded." });
+			return;
+		}
+		const images = req.files.map((file) => `/albums/${req.album.folder}/${file.filename}`);
+		res.json({ images });
+	});
+});
+
+app.delete("/api/albums/:id/images", loadAlbum, async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const filename = String(req.body.filename || "").trim();
+		if (!filename || filename !== path.basename(filename)) {
+			res.status(400).json({ error: "Invalid filename." });
+			return;
+		}
+		const ext = path.extname(filename).toLowerCase();
+		if (![".png", ".jpg", ".jpeg"].includes(ext)) {
+			res.status(400).json({ error: "Invalid file type." });
+			return;
+		}
+		const filePath = path.join(albumsDir, req.album.folder, filename);
+		await fs.promises.unlink(filePath);
+		res.json({ ok: true });
+	} catch (error) {
+		if (error && error.code === "ENOENT") {
+			res.status(404).json({ error: "File not found." });
+			return;
+		}
+		res.status(500).json({ error: "Failed to delete image." });
+	}
+});
+
+app.post("/api/sponsors", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const name = (req.body.name || "Sponsor").trim() || "Sponsor";
+		const logoUrl = (req.body.logoUrl || "").trim();
+		const linkUrl = (req.body.linkUrl || "").trim();
+		if (!logoUrl || !linkUrl) {
+			res.status(400).json({ error: "Logo and link are required." });
+			return;
+		}
+		const id = await createSponsor({ name, logoUrl, linkUrl, sortOrder: 0 });
+		res.status(201).json({ id });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to create sponsor." });
+	}
+});
+
+app.put("/api/sponsors/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		const name = (req.body.name || "Sponsor").trim() || "Sponsor";
+		const logoUrl = (req.body.logoUrl || "").trim();
+		const linkUrl = (req.body.linkUrl || "").trim();
+		if (!id || !logoUrl || !linkUrl) {
+			res.status(400).json({ error: "Logo and link are required." });
+			return;
+		}
+		await updateSponsor(id, { name, logoUrl, linkUrl, sortOrder: 0 });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update sponsor." });
+	}
+});
+
+app.delete("/api/sponsors/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		if (!id) {
+			res.status(400).json({ error: "Invalid id." });
+			return;
+		}
+		await deleteSponsor(id);
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete sponsor." });
+	}
+});
+
+app.get("/photos", async (req, res, next) => {
+	try {
+		const albums = await getAlbums();
+		res.render("photos", { albums });
+	} catch (error) {
+		next(error);
+	}
 });
 
 app.post("/contact", (req, res) => {

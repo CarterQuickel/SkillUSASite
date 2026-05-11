@@ -12,6 +12,7 @@
     />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/staff.css" />
+    <link rel="stylesheet" href="/css/news.css" />
   </head>
   <body>
     <%- include('header') %>
@@ -19,14 +20,31 @@
       <!-- Advisors Section -->
       <section class="team-section advisors-section">
         <div class="team-section-header">
-          <h2>Advisors</h2>
+          <div class="section-title-row">
+            <h2>Advisors</h2>
+            <% if (isAdmin) { %>
+              <button class="admin-icon-button admin-add-button" type="button" title="Add advisor" aria-label="Add advisor" data-add-section="Advisors">
+                <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+              </button>
+            <% } %>
+          </div>
           <p>Dedicated mentors supporting our members</p>
         </div>
         <div class="team-grid">
           <% if (advisors && advisors.length) { %>
             <% advisors.forEach((member) => { %>
-              <% const imageSrc = "/icons/placeholder.png"; %>
-              <div class="team-member">
+              <% const imageSrc = member.image_path || "/icons/placeholder.png"; %>
+              <div class="team-member" data-id="<%= member.id %>" data-name="<%= member.name %>" data-role="<%= member.role %>" data-bio="<%= member.bio %>" data-section="Advisors" data-image-url="<%= imageSrc %>">
+                <% if (isAdmin) { %>
+                  <div class="news-admin-actions">
+                    <button class="admin-icon-button admin-delete-button" type="button" title="Delete advisor" aria-label="Delete advisor">
+                      <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                    </button>
+                    <button class="admin-icon-button admin-edit-button" type="button" title="Edit advisor" aria-label="Edit advisor">
+                      <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                    </button>
+                  </div>
+                <% } %>
                 <div class="member-image">
                   <img src="<%= imageSrc %>" alt="<%= member.name %>" />
                 </div>
@@ -46,14 +64,31 @@
       <!-- Officers Section -->
       <section class="team-section">
         <div class="team-section-header">
-          <h2>Officers</h2>
+          <div class="section-title-row">
+            <h2>Officers</h2>
+            <% if (isAdmin) { %>
+              <button class="admin-icon-button admin-add-button" type="button" title="Add officer" aria-label="Add officer" data-add-section="Officers">
+                <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+              </button>
+            <% } %>
+          </div>
           <p>Leadership driving SkillsUSA forward</p>
         </div>
         <div class="team-grid">
           <% if (officers && officers.length) { %>
             <% officers.forEach((member) => { %>
-              <% const imageSrc = "/icons/placeholder.png"; %>
-              <div class="team-member">
+              <% const imageSrc = member.image_path || "/icons/placeholder.png"; %>
+              <div class="team-member" data-id="<%= member.id %>" data-name="<%= member.name %>" data-role="<%= member.role %>" data-bio="<%= member.bio %>" data-section="Officers" data-image-url="<%= imageSrc %>">
+                <% if (isAdmin) { %>
+                  <div class="news-admin-actions">
+                    <button class="admin-icon-button admin-delete-button" type="button" title="Delete officer" aria-label="Delete officer">
+                      <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                    </button>
+                    <button class="admin-icon-button admin-edit-button" type="button" title="Edit officer" aria-label="Edit officer">
+                      <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                    </button>
+                  </div>
+                <% } %>
                 <div class="member-image">
                   <img src="<%= imageSrc %>" alt="<%= member.name %>" />
                 </div>
@@ -69,8 +104,51 @@
           <% } %>
         </div>
       </section>
+      <% if (isAdmin) { %>
+        <div class="admin-modal" id="adminStaffModal" aria-hidden="true">
+          <div class="admin-modal-backdrop" data-admin-close></div>
+          <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="adminStaffModalTitle">
+            <div class="admin-modal-header">
+              <h3 id="adminStaffModalTitle">Edit staff member</h3>
+              <button class="admin-modal-close" type="button" data-admin-close aria-label="Close">Close</button>
+            </div>
+            <div class="admin-modal-body">
+              <form class="admin-modal-form" id="adminStaffForm">
+                <label for="adminStaffName">Name</label>
+                <input id="adminStaffName" name="adminStaffName" type="text" required />
+
+                <label for="adminStaffRole">Role</label>
+                <input id="adminStaffRole" name="adminStaffRole" type="text" required />
+
+                <label for="adminStaffSection">Section</label>
+                <select id="adminStaffSection" name="adminStaffSection" required>
+                  <option value="Advisors">Advisors</option>
+                  <option value="Officers">Officers</option>
+                </select>
+
+                <label for="adminStaffBio">Bio</label>
+                <textarea id="adminStaffBio" name="adminStaffBio" rows="5" required></textarea>
+
+                <label for="adminStaffImage">Photo upload</label>
+                <input id="adminStaffImage" name="adminStaffImage" type="file" accept=".png,.jpg,.jpeg" />
+                <p class="admin-modal-hint">PNG or JPG up to 50 MB.</p>
+
+                <div class="admin-modal-actions">
+                  <button class="admin-modal-save" type="submit">Save</button>
+                  <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
+                </div>
+              </form>
+              <div class="admin-modal-preview">
+                <p class="admin-preview-label">Preview</p>
+                <div class="admin-preview-card" id="adminStaffPreview"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
     </main>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/js/staff-admin.js"></script>
   </body>
 </html>

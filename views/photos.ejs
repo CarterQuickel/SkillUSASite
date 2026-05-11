@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/photos.css" />
     <link rel="stylesheet" href="/css/album.css">
+    <link rel="stylesheet" href="/css/news.css" />
   </head>
   <body>
     <%- include('header') %>
@@ -26,7 +27,14 @@
       </section>
 
       <section class="photos-intro">
-        <h2>Our Photo Albums</h2>
+        <div class="section-title-row">
+          <h2>Our Photo Albums</h2>
+          <% if (isAdmin) { %>
+            <button class="admin-icon-button admin-add-button" type="button" title="Add album" aria-label="Add album" data-add-type="album">
+              <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+            </button>
+          <% } %>
+        </div>
         <p>
           Browse through our collection of memorable moments from SkillsUSA competitions, team 
           events, and student achievements. Click on any album to view all photos.
@@ -34,52 +42,72 @@
       </section>
       <!-- import the album.tsx file below -->
       <div id="albums-grid">
-        <div
-          class="album"
-          data-title="Feb. 27, 2026 - NTHS & SkillsUSA"
-          data-description="Seventy-five members of our SkillsUSA and National Technical Honor Society chapters participated in the Capital Area Cool Schools Polar Plunge on Feb. 27, 2026. They raised over $1,000 for Special Olympics Pennsylvania, which will go toward unified sports programs, engagement activities, training resources, and much more."
-          data-folder="2272026"
-        ></div>
-        <div
-          class="album"
-          data-title="Feb. 18, 2026 - SkillsUSA & Culinary Arts"
-          data-description="The advisors and class representatives for SkillsUSA came together during a special luncheon on Feb. 18, 2026. It was an opportunity to discuss specific chapter topics and review two important life skills: dining etiquette and table manners. The meal was prepared by students in our Culinary Arts program, so they benefited from a chance to practice their food service techniques and front-of-house skills."
-          data-folder="2182026"
-        ></div>
-        <div
-          class="album"
-          data-title="Dec. 11, 2025 - Student Council & SkillsUSA Free Hunger York Event"
-          data-description="We're #YorkTechProud to have students and employees who value giving back to the community. Members of Student Council and SkillsUSA volunteered at the York County Food Bank on Dec. 11, 2025. They packed 1,280 boxes of food for senior citizens in need. Way to go, Spartans!"
-          data-folder="freeHungerYork"
-        ></div>
-        <div
-          class="album"
-          data-title="April 2-4, 2025 - SkillsUSA National Leadership and Skills Conference"
-          data-description="Thirteen students and two advisors attended the SkillsUSA Pennsylvania Leadership and Skills Conference in Hershey from April 2-4, 2025. While there, Felicity Troup was elected a state officer, and Rylan McCubbin finished third in the Automotive Technology competition! Thanks to his great performance, Rylan earned a $6,000 scholarship and a Snap-on tool set worth $400. Congratulations, Felicity and Rylan, and thank you to everyone who represented Spartan Nation during this event!"
-          data-folder="422025"
-        ></div>
-        <div
-          class="album"
-          data-title="Jan. 28, 2025 - SkillsUSA"
-          data-description="SkillsUSA members participated in an organizational meeting and awards ceremony."
-          data-folder="1282025"
-        ></div>
-        <div
-          class="album"
-          data-title="Dec. 17, 2024 - FFA and SkillsUSA"
-          data-description="Students in FFA and SkillsUSA went on a community service field trip to New Bridgeville on Dec. 17,2024. They pruned trees that were planted by York Tech students in 2014! Thank you to Alan Miller, owner of River Rock Landscape and an Occupational Advisory Committee member at York Tech, for assisting with this learning opportunity."
-          data-folder="12172024"
-        ></div>
-        <div
-          class="album"
-          data-title="Nov. 7, 2024 - SkillsUSA PA State Leadership and Skills Conference"
-          data-description="Our chapter of SkillsUSA is gearing up for another round of conferences, competitions, and skill development. The leadership team and officers met on Nov. 7, 2024, to prepare for a Central Region workshop being held in Gettysburg. They were also fitted for their iconic red jackets, which is always exciting! Thank you to Mr. Balsavage and Mr. Spahr, the chapter's advisors, for helping members prepare for career success through this great organization!"
-          data-folder="1172024"
-        ></div>
+        <% (albums || []).forEach((album) => { %>
+          <div class="album-shell" data-album-id="<%= album.id %>" data-title="<%= album.title %>" data-description="<%= album.description %>" data-folder="<%= album.folder %>">
+            <% if (isAdmin) { %>
+              <div class="news-admin-actions">
+                <button class="admin-icon-button admin-delete-button" type="button" title="Delete album" aria-label="Delete album">
+                  <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                </button>
+                <button class="admin-icon-button admin-edit-button" type="button" title="Edit album" aria-label="Edit album">
+                  <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                </button>
+              </div>
+            <% } %>
+            <div
+              class="album"
+              data-title="<%= album.title %>"
+              data-description="<%= album.description %>"
+              data-folder="<%= album.folder %>"
+            ></div>
+          </div>
+        <% }) %>
       </div>
+      <% if (isAdmin) { %>
+        <div class="admin-modal" id="adminAlbumModal" aria-hidden="true">
+          <div class="admin-modal-backdrop" data-admin-close></div>
+          <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="adminAlbumModalTitle">
+            <div class="admin-modal-header">
+              <h3 id="adminAlbumModalTitle">Edit album</h3>
+              <button class="admin-modal-close" type="button" data-admin-close aria-label="Close">Close</button>
+            </div>
+            <div class="admin-modal-body">
+              <form class="admin-modal-form" id="adminAlbumForm">
+                <label for="adminAlbumTitle">Album name</label>
+                <input id="adminAlbumTitle" name="adminAlbumTitle" type="text" required />
+
+                <label for="adminAlbumFolder">Album folder</label>
+                <input id="adminAlbumFolder" name="adminAlbumFolder" type="text" required />
+                <p class="admin-modal-hint">Letters, numbers, hyphens, and underscores only.</p>
+
+                <label for="adminAlbumDescription">Description</label>
+                <textarea id="adminAlbumDescription" name="adminAlbumDescription" rows="5" required></textarea>
+
+                <label for="adminAlbumImages">Add images</label>
+                <input id="adminAlbumImages" name="adminAlbumImages" type="file" accept=".png,.jpg,.jpeg" multiple />
+                <p class="admin-modal-hint">Upload JPG or PNG images for this album.</p>
+
+                <label for="adminAlbumFolderImages">Add image folder</label>
+                <input id="adminAlbumFolderImages" name="adminAlbumFolderImages" type="file" accept=".png,.jpg,.jpeg" webkitdirectory directory multiple />
+                <p class="admin-modal-hint">Choose a folder to upload all images inside.</p>
+
+                <div class="admin-modal-actions">
+                  <button class="admin-modal-save" type="submit">Save</button>
+                  <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
+                </div>
+              </form>
+              <div class="admin-modal-preview">
+                <p class="admin-preview-label">Current images</p>
+                <div class="album-admin-images" id="adminAlbumImagesList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
       <script src="/album.js"></script>
     </main>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/js/photos-admin.js"></script>
   </body>
 </html>

@@ -12,6 +12,7 @@
     />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/home.css" />
+    <link rel="stylesheet" href="/css/news.css" />
   </head>
   <body>
     <%- include('header') %>
@@ -20,7 +21,7 @@
         <div class="hero-media" role="img" aria-label="Students at SkillsUSA competitions"></div>
         <div class="hero-content">
           <h1>SkillsUSA Competitions</h1>
-          <a class="hero-button" href="/bars">Learn More</a>
+          <a class="hero-button" href="/competitions">Learn More</a>
         </div>
       </section>
 
@@ -71,7 +72,14 @@
 
       <section class="sponsors-section">
         <div class="sponsors-intro">
-          <h2>Sponsors</h2>
+          <div class="section-title-row">
+            <h2>Sponsors</h2>
+            <% if (isAdmin) { %>
+              <button class="admin-icon-button admin-add-button" type="button" title="Add sponsor" aria-label="Add sponsor" data-add-type="sponsor">
+                <img src="/icons/plus.svg" alt="" aria-hidden="true" />
+              </button>
+            <% } %>
+          </div>
           <p>
             Without the support of our partners, SkillsUSA's vital mission of empowering students to
             become skilled professionals, career-ready leaders and responsible community members
@@ -80,25 +88,80 @@
           </p>
         </div>
         <div class="sponsors-grid">
-          <div class="sponsor-card">SECCO Electric</div>
-          <div class="sponsor-card">Faulkner</div>
-          <div class="sponsor-card">Hoffman Ford</div>
-          <div class="sponsor-card">Remco, Inc.</div>
-          <div class="sponsor-card">Pennsylvania College of Technology</div>
-          <div class="sponsor-card">Ainsworth</div>
-          <div class="sponsor-card">Crown Automotive</div>
-          <div class="sponsor-card">AP Williams Construction</div>
-          <div class="sponsor-card">DCTS Education Foundation</div>
-          <div class="sponsor-card">Dauphin County</div>
-          <div class="sponsor-card">Collision Repair Technology</div>
-          <div class="sponsor-card">LaPorte Painting</div>
-          <div class="sponsor-card">Machinery Tech</div>
-          <div class="sponsor-card">IEC Pennsylvania</div>
-          <div class="sponsor-card">Witmer Group</div>
+          <% (sponsors || []).forEach((sponsor) => { %>
+            <div class="sponsor-card" data-item-type="sponsor" data-id="<%= sponsor.id %>" data-name="<%= sponsor.name %>" data-logo-url="<%= sponsor.logo_url %>" data-link-url="<%= sponsor.link_url %>">
+              <% if (isAdmin) { %>
+                <div class="news-admin-actions">
+                  <button class="admin-icon-button admin-delete-button" type="button" title="Delete sponsor" aria-label="Delete sponsor">
+                    <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+                  </button>
+                  <button class="admin-icon-button admin-edit-button" type="button" title="Edit sponsor" aria-label="Edit sponsor">
+                    <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+                  </button>
+                </div>
+              <% } %>
+              <div class="sponsor-link" role="link" tabindex="0" aria-label="Visit <%= sponsor.name || 'Sponsor' %>">
+                <span class="sponsor-logo">
+                  <img src="<%= sponsor.logo_url %>" alt="<%= sponsor.name || 'Sponsor' %> logo" />
+                </span>
+              </div>
+            </div>
+          <% }) %>
         </div>
       </section>
+      <% if (isAdmin) { %>
+        <div class="admin-modal" id="adminSponsorModal" aria-hidden="true">
+          <div class="admin-modal-backdrop" data-admin-close></div>
+          <div class="admin-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="adminSponsorModalTitle">
+            <div class="admin-modal-header">
+              <h3 id="adminSponsorModalTitle">Edit sponsor</h3>
+              <button class="admin-modal-close" type="button" data-admin-close aria-label="Close">Close</button>
+            </div>
+            <div class="admin-modal-body">
+              <form class="admin-modal-form" id="adminSponsorForm">
+                <label for="adminSponsorName">Sponsor name</label>
+                <input id="adminSponsorName" name="adminSponsorName" type="text" />
+
+                <label for="adminSponsorLink">Sponsor link</label>
+                <input id="adminSponsorLink" name="adminSponsorLink" type="url" placeholder="https://" required />
+
+                <label for="adminSponsorLogo">Logo upload</label>
+                <input id="adminSponsorLogo" name="adminSponsorLogo" type="file" accept=".png,.jpg,.jpeg" />
+                <p class="admin-modal-hint">PNG or JPG up to 50 MB.</p>
+
+                <div class="admin-modal-actions">
+                  <button class="admin-modal-save" type="submit">Save</button>
+                  <button class="admin-modal-cancel" type="button" data-admin-close>Cancel</button>
+                </div>
+              </form>
+              <div class="admin-modal-preview">
+                <p class="admin-preview-label">Preview</p>
+                <div class="admin-preview-card" id="adminSponsorPreview"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <template id="sponsorCardTemplate">
+          <div class="sponsor-card" data-item-type="sponsor" data-id="" data-name="" data-logo-url="" data-link-url="" data-is-new="true">
+            <div class="news-admin-actions">
+              <button class="admin-icon-button admin-delete-button" type="button" title="Delete sponsor" aria-label="Delete sponsor">
+                <img src="/icons/trash.svg" alt="" aria-hidden="true" />
+              </button>
+              <button class="admin-icon-button admin-edit-button" type="button" title="Edit sponsor" aria-label="Edit sponsor">
+                <img src="/icons/pen.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+            <div class="sponsor-link" role="link" tabindex="0" aria-label="Visit sponsor">
+              <span class="sponsor-logo">
+                <img src="/icons/placeholder.png" alt="Sponsor logo" />
+              </span>
+            </div>
+          </div>
+        </template>
+      <% } %>
     </main>
     <%- include('footer') %>
     <script src="/js/main.js"></script>
+    <script src="/js/sponsors.js"></script>
   </body>
 </html>
