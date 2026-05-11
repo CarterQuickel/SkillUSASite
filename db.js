@@ -318,6 +318,41 @@ const seedEventsIfMissing = async (db) => {
   }
 };
 
+const seedSponsorsIfMissing = async (db) => {
+  const row = await get(db, "SELECT COUNT(*) AS count FROM sponsors");
+  if (row.count > 0) {
+    return;
+  }
+
+  const seedSponsors = [
+    { name: "SECCO Electric" },
+    { name: "Faulkner" },
+    { name: "Hoffman Ford" },
+    { name: "Remco, Inc." },
+    { name: "Pennsylvania College of Technology" },
+    { name: "Ainsworth" },
+    { name: "Crown Automotive" },
+    { name: "AP Williams Construction" },
+    { name: "DCTS Education Foundation" },
+    { name: "Dauphin County" },
+    { name: "Collision Repair Technology" },
+    { name: "LaPorte Painting" },
+    { name: "Machinery Tech" },
+    { name: "IEC Pennsylvania" },
+    { name: "Witmer Group" }
+  ];
+
+  for (const [index, sponsor] of seedSponsors.entries()) {
+    await run(
+      db,
+      `INSERT INTO sponsors (name, logo_url, link_url, sort_order)
+       VALUES (?, ?, ?, ?)`
+      ,
+      [sponsor.name, "/icons/placeholder.png", "/sponsor", index + 1]
+    );
+  }
+};
+
 const initializeDatabase = async () => {
   const db = getDb();
 
@@ -373,11 +408,24 @@ const initializeDatabase = async () => {
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`
   );
+  await run(
+    db,
+    `CREATE TABLE IF NOT EXISTS sponsors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      logo_url TEXT NOT NULL,
+      link_url TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`
+  );
 
   await seedAdminIfMissing(db);
   await seedStaffIfMissing(db);
   await seedNewsIfMissing(db);
   await seedEventsIfMissing(db);
+  await seedSponsorsIfMissing(db);
   await ensureAdminPassword(db);
 };
 
@@ -485,6 +533,45 @@ const deleteEventItem = async (id) => {
   await run(db, "DELETE FROM event_items WHERE id = ?", [id]);
 };
 
+const getSponsors = async () => {
+  const db = getDb();
+  return all(
+    db,
+    `SELECT id, name, logo_url, link_url, sort_order
+     FROM sponsors
+     ORDER BY sort_order ASC, name ASC, id ASC`
+  );
+};
+
+const createSponsor = async ({ name, logoUrl, linkUrl, sortOrder }) => {
+  const db = getDb();
+  const result = await run(
+    db,
+    `INSERT INTO sponsors (name, logo_url, link_url, sort_order)
+     VALUES (?, ?, ?, ?)`
+    ,
+    [name, logoUrl, linkUrl, sortOrder || 0]
+  );
+  return result.lastID;
+};
+
+const updateSponsor = async (id, { name, logoUrl, linkUrl, sortOrder }) => {
+  const db = getDb();
+  await run(
+    db,
+    `UPDATE sponsors
+     SET name = ?, logo_url = ?, link_url = ?, sort_order = ?, updated_at = datetime('now')
+     WHERE id = ?`
+    ,
+    [name, logoUrl, linkUrl, sortOrder || 0, id]
+  );
+};
+
+const deleteSponsor = async (id) => {
+  const db = getDb();
+  await run(db, "DELETE FROM sponsors WHERE id = ?", [id]);
+};
+
 module.exports = {
   initializeDatabase,
   getStaffBySection,
@@ -496,5 +583,9 @@ module.exports = {
   getEventItems,
   createEventItem,
   updateEventItem,
-  deleteEventItem
+  deleteEventItem,
+  getSponsors,
+  createSponsor,
+  updateSponsor,
+  deleteSponsor
 };

@@ -16,7 +16,11 @@ const {
 	getEventItems,
 	createEventItem,
 	updateEventItem,
-	deleteEventItem
+	deleteEventItem,
+	getSponsors,
+	createSponsor,
+	updateSponsor,
+	deleteSponsor
 } = require("./db");
 
 require("dotenv").config();
@@ -115,7 +119,29 @@ const upload = multer({
 	}
 });
 
-// Separate multer instance for sponsor logos - uses memory storage for email attachments
+const sponsorUpload = multer({
+	storage: multer.diskStorage({
+		destination: uploadsDir,
+		filename: (req, file, cb) => {
+			const timestamp = Date.now();
+			const random = Math.round(Math.random() * 1e9);
+			const ext = path.extname(file.originalname).toLowerCase();
+			cb(null, `sponsor-${timestamp}-${random}${ext}`);
+		}
+	}),
+	limits: { fileSize: 50 * 1024 * 1024 },
+	fileFilter: (req, file, cb) => {
+		const allowed = [".png", ".jpg", ".jpeg"];
+		const ext = path.extname(file.originalname).toLowerCase();
+		if (!allowed.includes(ext)) {
+			cb(new Error("Only PNG and JPG images are allowed."));
+			return;
+		}
+		cb(null, true);
+	}
+});
+
+// Separate multer instance for sponsor form logos - uses memory storage for email attachments
 const logoUpload = multer({
 	storage: multer.memoryStorage(),
 	limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit for logos
@@ -130,8 +156,13 @@ const logoUpload = multer({
 	}
 });
 
-app.get("/", (req, res) => {
-	res.render("index");
+app.get("/", async (req, res, next) => {
+	try {
+		const sponsors = await getSponsors();
+		res.render("index", { sponsors });
+	} catch (error) {
+		next(error);
+	}
 });
 
 app.get("/bars", (req, res) => {
@@ -200,6 +231,27 @@ app.post("/admin/upload", (req, res) => {
 	}
 
 	upload.single("image")(req, res, (error) => {
+		if (error) {
+			res.status(400).json({ error: error.message });
+			return;
+		}
+
+		if (!req.file) {
+			res.status(400).json({ error: "No file uploaded." });
+			return;
+		}
+
+		res.json({ url: `/uploads/${req.file.filename}` });
+	});
+});
+
+app.post("/admin/sponsor-upload", (req, res) => {
+	if (!req.session.isAdmin) {
+		res.status(403).json({ error: "Unauthorized" });
+		return;
+	}
+
+	sponsorUpload.single("logo")(req, res, (error) => {
 		if (error) {
 			res.status(400).json({ error: error.message });
 			return;
@@ -485,6 +537,62 @@ app.delete("/api/events/:id", async (req, res) => {
 		res.json({ ok: true });
 	} catch (error) {
 		res.status(500).json({ error: "Failed to delete event." });
+	}
+});
+
+app.post("/api/sponsors", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const name = (req.body.name || "Sponsor").trim() || "Sponsor";
+		const logoUrl = (req.body.logoUrl || "").trim();
+		const linkUrl = (req.body.linkUrl || "").trim();
+		if (!logoUrl || !linkUrl) {
+			res.status(400).json({ error: "Logo and link are required." });
+			return;
+		}
+		const id = await createSponsor({ name, logoUrl, linkUrl, sortOrder: 0 });
+		res.status(201).json({ id });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to create sponsor." });
+	}
+});
+
+app.put("/api/sponsors/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		const name = (req.body.name || "Sponsor").trim() || "Sponsor";
+		const logoUrl = (req.body.logoUrl || "").trim();
+		const linkUrl = (req.body.linkUrl || "").trim();
+		if (!id || !logoUrl || !linkUrl) {
+			res.status(400).json({ error: "Logo and link are required." });
+			return;
+		}
+		await updateSponsor(id, { name, logoUrl, linkUrl, sortOrder: 0 });
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update sponsor." });
+	}
+});
+
+app.delete("/api/sponsors/:id", async (req, res) => {
+	if (!ensureAdmin(req, res)) {
+		return;
+	}
+	try {
+		const id = Number(req.params.id);
+		if (!id) {
+			res.status(400).json({ error: "Invalid id." });
+			return;
+		}
+		await deleteSponsor(id);
+		res.json({ ok: true });
+	} catch (error) {
+		res.status(500).json({ error: "Failed to delete sponsor." });
 	}
 });
 

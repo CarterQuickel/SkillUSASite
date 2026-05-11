@@ -216,6 +216,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModal = () => {
     editModal.classList.remove("is-open");
     editModal.setAttribute("aria-hidden", "true");
+    if (activeCard && activeCard.dataset.isNew === "true") {
+      activeCard.remove();
+    }
     activeCard = null;
     activeImageUrl = "";
     if (previewObjectUrl) {
