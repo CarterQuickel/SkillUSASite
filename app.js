@@ -358,15 +358,18 @@ app.get("/donate", (req, res) => {
 	res.render("donate", { success, error });
 });
 
-app.get("/sponsor", (req, res) => {
-	const success = req.session.formSuccess || false;
-	const error = req.session.formError || null;
-	
-	// Clear session messages after retrieving them
-	req.session.formSuccess = false;
-	req.session.formError = null;
-	
-	res.render("sponsor", { success, error });
+app.get("/sponsor", async (req, res, next) => {
+	try {
+		const success = req.session.formSuccess || false;
+		const error = req.session.formError || null;
+		const sponsors = await getSponsors();
+		// Clear session messages after retrieving them
+		req.session.formSuccess = false;
+		req.session.formError = null;
+		res.render("sponsor", { success, error, sponsors });
+	} catch (error) {
+		next(error);
+	}
 });
 
 app.get("/news", (req, res) => {
